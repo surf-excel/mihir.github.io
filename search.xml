@@ -1,24 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Hello World</title>
-    <url>/2024/12/18/hello-world/</url>
-    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-]]></content>
-  </entry>
-  <entry>
     <title>Kalmar CTF 2025</title>
     <url>/2025/03/10/kalmarctf2025/</url>
     <content><![CDATA[<p>I played with r3kapig last weekend, and we managed to solve 5 out of 8 crypto challs. </p>
@@ -81,7 +63,7 @@
 <ol>
 <li>$p &#x3D; N, q &#x3D; 1$</li>
 <li>$four(a_1, a_2, a_3, a_4) &#x3D; p^2 - 4$</li>
-<li>$b_1, b_2, b_3, b_4 &#x3D; rand, rand, rand, rand$</li>
+<li>$(b_1, b_2, b_3, b_4) &#x3D; (rand, rand, rand, rand)$</li>
 </ol>
 <p>For each $pos$, we should find three positions $(i, j, k)$ where $(b_2, b_3, b_4)$ can be opened to satisfy the constraints. I just iterate through $i$ and solve the following equations:</p>
 <ol>
@@ -89,7 +71,22 @@
 <li>$f_0 \cdot b_3 + f_1 \cdot b_4 &#x3D; v \pmod{p_i}$</li>
 </ol>
 <p>After finding possible solutions, we can then check if there are positions $(j, k)$ that satisfy the solutions.</p>
-<h3 id="Vuln2-Intended"><a href="#Vuln2-Intended" class="headerlink" title="Vuln2 (Intended)"></a>Vuln2 (Intended)</h3>]]></content>
+<h3 id="Vuln2-Intended"><a href="#Vuln2-Intended" class="headerlink" title="Vuln2 (Intended)"></a>Vuln2 (Intended)</h3><p>The second vuln lies in the final constraint over all the commitments. This time our strategy is more direct:</p>
+<ol>
+<li>$p &#x3D; N, q &#x3D; 1$</li>
+<li>$four(a_1, a_2, a_3, a_4) &#x3D; p^2 - 4$</li>
+<li>find $(b_1, b_2, b_3, b_4)$ such that $\forall p_i \in PRIMES \rightarrow (b_1, b_2, b_3, b_4) &#x3D; (-1, -1, -1, 0) \pmod{p_i}$</li>
+</ol>
+<p>Or something else, satisfying $b_1^2 + b_2^2 + b_3^2 + b_4^2 &#x3D; -3 \pmod{p_i}$. It turns out that one can easily find a solution with CRT, which will be very large. The value of the last constraints (linear combined commitments) is too large to pass the following code in <code>Verifier</code>.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Verifier</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">value</span>(<span class="params">self</span>):</span><br><span class="line">        value = <span class="built_in">next</span>(<span class="variable language_">self</span>.vals)</span><br><span class="line">        <span class="keyword">assert</span> - <span class="number">2</span>**BITS &lt; value &lt; <span class="number">2</span>**BITS</span><br><span class="line">        <span class="variable language_">self</span>.tx.value(value)</span><br><span class="line">        <span class="keyword">return</span> value</span><br></pre></td></tr></table></figure>
+
+<p>Actually $\mathcal{V}$ does NOT check how many commitments are used, and the verification for the last constraint just sum all of them up. So we can add an extra “unauthorized” commitment to control the value to zero. Since <code>transcript</code> is unchanged, we can first get both the constraint and all the $p_i$, and then construct out commitment. </p>
+<p>During the contest we noticed some strange implementations in the challenge XD, but didn’t analyze it further.</p>
+<!-- 
+<img src="/2025/03/10/kalmarctf2025/image/1.png" class="" title="[1]"><img src="/2025/03/10/kalmarctf2025/image/2.png" class="" title="[1]"> -->
+
+<p><img src="/2025/03/10/kalmarctf2025/image/1.png" alt="image"></p>
+]]></content>
       <tags>
         <tag>zkp</tag>
       </tags>

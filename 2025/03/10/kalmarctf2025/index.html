@@ -13,11 +13,15 @@
 <meta property="og:site_name" content="Rec|rEc|reC">
 <meta property="og:description" content="I played with r3kapig last weekend, and we managed to solve 5 out of 8 crypto challs.">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://rechn0.github.io/2025/03/10/kalmarctf2025/image/1.png">
+<meta property="og:image" content="http://rechn0.github.io/2025/03/10/kalmarctf2025/image/2.png">
+<meta property="og:image" content="http://rechn0.github.io/2025/03/10/kalmarctf2025/image/1.png">
 <meta property="article:published_time" content="2025-03-10T06:15:36.000Z">
-<meta property="article:modified_time" content="2025-03-14T13:12:27.847Z">
+<meta property="article:modified_time" content="2025-03-14T16:41:36.959Z">
 <meta property="article:author" content="rec">
 <meta property="article:tag" content="zkp">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://rechn0.github.io/2025/03/10/kalmarctf2025/image/1.png">
     
     
       
@@ -95,8 +99,6 @@
       <ul>
         
         
-        <li><a class="icon" aria-label="Next post" href="/2024/12/18/hello-world/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
-        
         <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
         <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
       </ul>
@@ -152,7 +154,7 @@
       
         <time datetime="2025-03-10T06:15:36.000Z" class="dt-published" itemprop="datePublished">2025-03-10</time>
         
-        (Updated: <time datetime="2025-03-14T13:12:27.847Z" class="dt-updated" itemprop="dateModified">2025-03-14</time>)
+        (Updated: <time datetime="2025-03-14T16:41:36.959Z" class="dt-updated" itemprop="dateModified">2025-03-15</time>)
         
       
     </div>
@@ -232,7 +234,7 @@
 <ol>
 <li>$p &#x3D; N, q &#x3D; 1$</li>
 <li>$four(a_1, a_2, a_3, a_4) &#x3D; p^2 - 4$</li>
-<li>$b_1, b_2, b_3, b_4 &#x3D; rand, rand, rand, rand$</li>
+<li>$(b_1, b_2, b_3, b_4) &#x3D; (rand, rand, rand, rand)$</li>
 </ol>
 <p>For each $pos$, we should find three positions $(i, j, k)$ where $(b_2, b_3, b_4)$ can be opened to satisfy the constraints. I just iterate through $i$ and solve the following equations:</p>
 <ol>
@@ -240,7 +242,22 @@
 <li>$f_0 \cdot b_3 + f_1 \cdot b_4 &#x3D; v \pmod{p_i}$</li>
 </ol>
 <p>After finding possible solutions, we can then check if there are positions $(j, k)$ that satisfy the solutions.</p>
-<h3 id="Vuln2-Intended"><a href="#Vuln2-Intended" class="headerlink" title="Vuln2 (Intended)"></a>Vuln2 (Intended)</h3>
+<h3 id="Vuln2-Intended"><a href="#Vuln2-Intended" class="headerlink" title="Vuln2 (Intended)"></a>Vuln2 (Intended)</h3><p>The second vuln lies in the final constraint over all the commitments. This time our strategy is more direct:</p>
+<ol>
+<li>$p &#x3D; N, q &#x3D; 1$</li>
+<li>$four(a_1, a_2, a_3, a_4) &#x3D; p^2 - 4$</li>
+<li>find $(b_1, b_2, b_3, b_4)$ such that $\forall p_i \in PRIMES \rightarrow (b_1, b_2, b_3, b_4) &#x3D; (-1, -1, -1, 0) \pmod{p_i}$</li>
+</ol>
+<p>Or something else, satisfying $b_1^2 + b_2^2 + b_3^2 + b_4^2 &#x3D; -3 \pmod{p_i}$. It turns out that one can easily find a solution with CRT, which will be very large. The value of the last constraints (linear combined commitments) is too large to pass the following code in <code>Verifier</code>.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Verifier</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">value</span>(<span class="params">self</span>):</span><br><span class="line">        value = <span class="built_in">next</span>(<span class="variable language_">self</span>.vals)</span><br><span class="line">        <span class="keyword">assert</span> - <span class="number">2</span>**BITS &lt; value &lt; <span class="number">2</span>**BITS</span><br><span class="line">        <span class="variable language_">self</span>.tx.value(value)</span><br><span class="line">        <span class="keyword">return</span> value</span><br></pre></td></tr></table></figure>
+
+<p>Actually $\mathcal{V}$ does NOT check how many commitments are used, and the verification for the last constraint just sum all of them up. So we can add an extra “unauthorized” commitment to control the value to zero. Since <code>transcript</code> is unchanged, we can first get both the constraint and all the $p_i$, and then construct out commitment. </p>
+<p>During the contest we noticed some strange implementations in the challenge XD, but didn’t analyze it further.</p>
+<!-- 
+<img src="/2025/03/10/kalmarctf2025/image/1.png" class="" title="[1]"><img src="/2025/03/10/kalmarctf2025/image/2.png" class="" title="[1]"> -->
+
+<p><img src="/2025/03/10/kalmarctf2025/image/1.png" alt="image"></p>
+
   </div>
 </article>
 
