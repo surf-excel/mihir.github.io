@@ -112,10 +112,11 @@
 <li><a href="RSA+/task.py">task.py</a></li>
 </ul>
 </blockquote>
-<p>It turns out that we can send two composite number $(p, q)$, both smaller than 512 bits. Then we can just find all the solutions on $p_i$ and combine them with CRT. I believe there exists a better way though.</p>
+<p>It turns out that we can send two composite number $(p, q)$, both smaller than 512 bits. Then we can just find all the solutions on $p_i$ and combine them with CRT.</p>
 <blockquote>
 <p>solution: <a href="RSA+/exp.py">exp.py</a></p>
 </blockquote>
+<p>I believe there exists a better way though.</p>
 <h2 id="DLP-7-solved"><a href="#DLP-7-solved" class="headerlink" title="DLP+ (7 solved)"></a>DLP+ (7 solved)</h2><blockquote>
 <ul>
 <li><a href="DLP+/task.py">task.py</a></li>
@@ -133,7 +134,7 @@
 <li><a href="hell_summon/task.py">task.py</a></li>
 </ul>
 </blockquote>
-<p>I spent the whole afternoon on this one in day1.</p>
+<p>I spent the whole afternoon day 1 on this one.</p>
 <p>We have 42 pairs of $(m_i, c_i &#x3D; r \cdot (m_i  \oplus H) + e_i \pmod{p})$, where $e_i$ is due to the truncation. We rewrite $m_i \oplus H$ as $\Sigma_{j&#x3D;0}^{39} (m_{i, j} + H_{j} - 2 \cdot m_{i, j} \cdot H_{j}) \cdot 2^{j}$. </p>
 <p>$$\Rightarrow \Sigma_{j&#x3D;0}^{39} r \cdot H_{j} \cdot ((1 - 2 \cdot m_{i, j}) \cdot 2^{j}) + r \cdot m_i  + e_i \pmod{p}$$</p>
 <p>Orthogonal Lattice seems to be an adorable choice, and it worked well. On the first attempt I found one short vector $v$ where $\vec{v} \cdot \vec{c} &#x3D; \vec{v} \cdot \vec{e} \pmod{p}$, and it’s small enough to omit $p$. But I didn’t manage to solve $\vec{e}$.</p>
