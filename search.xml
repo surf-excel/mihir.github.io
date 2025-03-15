@@ -6,7 +6,7 @@
     <content><![CDATA[<p>I played with r3kapig last weekend, and we managed to solve 5 out of 8 crypto challs. </p>
 <span id="more"></span>
 
-<h1 id="ZZKAoK-6-solves"><a href="#ZZKAoK-6-solves" class="headerlink" title="ZZKAoK (6 solves)"></a>ZZKAoK (6 solves)</h1><blockquote>
+<h2 id="ZZKAoK-6-solves"><a href="#ZZKAoK-6-solves" class="headerlink" title="ZZKAoK (6 solves)"></a>ZZKAoK (6 solves)</h2><blockquote>
 <ul>
 <li><a href="ZZKAoK/client.sage">client.sage</a></li>
 <li><a href="ZZKAoK/server.py">server.py</a></li>
@@ -107,7 +107,7 @@
 <p><img src="/2025/03/04/secconctf2025/images/1.png" alt="solve"></p>
 <p>Or maybe I was just too nervous.</p>
 <p>XO</p>
-<h1 id="RSA-8-solved"><a href="#RSA-8-solved" class="headerlink" title="RSA+ (8 solved)"></a>RSA+ (8 solved)</h1><blockquote>
+<h2 id="RSA-8-solved"><a href="#RSA-8-solved" class="headerlink" title="RSA+ (8 solved)"></a>RSA+ (8 solved)</h2><blockquote>
 <ul>
 <li><a href="RSA+/task.py">task.py</a></li>
 </ul>
@@ -116,7 +116,7 @@
 <blockquote>
 <p>solution: <a href="RSA+/exp.py">exp.py</a></p>
 </blockquote>
-<h1 id="DLP-7-solved"><a href="#DLP-7-solved" class="headerlink" title="DLP+ (7 solved)"></a>DLP+ (7 solved)</h1><blockquote>
+<h2 id="DLP-7-solved"><a href="#DLP-7-solved" class="headerlink" title="DLP+ (7 solved)"></a>DLP+ (7 solved)</h2><blockquote>
 <ul>
 <li><a href="DLP+/task.py">task.py</a></li>
 </ul>
@@ -128,7 +128,7 @@
 </blockquote>
 <p>@Sceleri and @soon_haari used $p &#x3D; 2^a \cdot 3^b + 1$. It does make more sense since $g &#x3D; 2^{a-1} \cdot 3^b$ and $h &#x3D; 2^a \cdot 3^{b-1}$ (same in our solution). But I donot want to go through it again so just let it go.</p>
 <p><img src="/2025/03/04/secconctf2025/images/3.png" alt="image"></p>
-<h1 id="hell-summon-6-solved"><a href="#hell-summon-6-solved" class="headerlink" title="hell_summon (6 solved)"></a>hell_summon (6 solved)</h1><blockquote>
+<h2 id="hell-summon-6-solved"><a href="#hell-summon-6-solved" class="headerlink" title="hell_summon (6 solved)"></a>hell_summon (6 solved)</h2><blockquote>
 <ul>
 <li><a href="hell_summon/task.py">task.py</a></li>
 </ul>
@@ -142,13 +142,13 @@
 <p>solution: <a href="hell_summon/exp.py">exp.py</a></p>
 </blockquote>
 <p>Definitely not a pleasing code but whatever.</p>
-<h1 id="x-x-4-solved"><a href="#x-x-4-solved" class="headerlink" title="*x_x (4 solved)"></a>*x_x (4 solved)</h1><blockquote>
+<h2 id="x-x-4-solved"><a href="#x-x-4-solved" class="headerlink" title="*x_x (4 solved)"></a>*x_x (4 solved)</h2><blockquote>
 <ul>
 <li><a href="x_x/task.sage">task.sage</a></li>
 </ul>
 </blockquote>
 <p>Working on it. UOV and sth bluhbluhbluh.</p>
-<h1 id="In-Japan"><a href="#In-Japan" class="headerlink" title="In Japan"></a>In Japan</h1><p>My first time to Japan, also my first time abroad. Not bad actually.</p>
+<h2 id="In-Japan"><a href="#In-Japan" class="headerlink" title="In Japan"></a>In Japan</h2><p>My first time to Japan, also my first time abroad. Not bad actually.</p>
 <table>
 <thead>
 <tr>
