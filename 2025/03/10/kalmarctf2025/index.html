@@ -13,14 +13,14 @@
 <meta property="og:site_name" content="Rec|rEc|reC">
 <meta property="og:description" content="I played with r3kapig last weekend, and we managed to solve 5 out of 8 crypto challs.">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://rechn0.github.io/2025/03/10/kalmarctf2025/image/1.png">
-<meta property="og:image" content="http://rechn0.github.io/2025/03/10/kalmarctf2025/image/2.png">
+<meta property="og:image" content="http://rechn0.github.io/2025/03/10/kalmarctf2025/images/1.png">
+<meta property="og:image" content="http://rechn0.github.io/2025/03/10/kalmarctf2025/images/2.png">
 <meta property="article:published_time" content="2025-03-10T06:15:36.000Z">
-<meta property="article:modified_time" content="2025-03-14T16:51:47.912Z">
+<meta property="article:modified_time" content="2025-03-15T04:44:48.027Z">
 <meta property="article:author" content="rec">
 <meta property="article:tag" content="zkp">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://rechn0.github.io/2025/03/10/kalmarctf2025/image/1.png">
+<meta name="twitter:image" content="http://rechn0.github.io/2025/03/10/kalmarctf2025/images/1.png">
     
     
       
@@ -98,6 +98,8 @@
       <ul>
         
         
+        <li><a class="icon" aria-label="Next post" href="/2025/03/04/secconctf2025/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
         <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
         <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
       </ul>
@@ -153,7 +155,7 @@
       
         <time datetime="2025-03-10T06:15:36.000Z" class="dt-published" itemprop="datePublished">2025-03-10</time>
         
-        (Updated: <time datetime="2025-03-14T16:51:47.912Z" class="dt-updated" itemprop="dateModified">2025-03-15</time>)
+        (Updated: <time datetime="2025-03-15T04:44:48.027Z" class="dt-updated" itemprop="dateModified">2025-03-15</time>)
         
       
     </div>
@@ -176,11 +178,13 @@
     <p>I played with r3kapig last weekend, and we managed to solve 5 out of 8 crypto challs. </p>
 <span id="more"></span>
 
-<h1 id="ZZKAoK-6-solves"><a href="#ZZKAoK-6-solves" class="headerlink" title="ZZKAoK (6 solves)"></a>ZZKAoK (6 solves)</h1><ul>
+<h1 id="ZZKAoK-6-solves"><a href="#ZZKAoK-6-solves" class="headerlink" title="ZZKAoK (6 solves)"></a>ZZKAoK (6 solves)</h1><blockquote>
+<ul>
 <li><a href="ZZKAoK/client.sage">client.sage</a></li>
 <li><a href="ZZKAoK/server.py">server.py</a></li>
 <li><a href="ZZKAoK/intarg.py">intarg.py</a></li>
 </ul>
+</blockquote>
 <p>I’ll explain this challenge following my path during the contest -&gt; logical confusion and nonsense.</p>
 <h3 id="Zk-Proof-System"><a href="#Zk-Proof-System" class="headerlink" title="Zk Proof System"></a>Zk Proof System</h3><p>Here comes a proof system for integer factorization. Given $N$, the Prover $\mathcal{P}$ can show the knowledge of two factors $(p, q)$ satisfying $N &#x3D; p \cdot q$ to the Verifier $\mathcal{V}$, though the following constraints:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># relation to prove:</span></span><br><span class="line"><span class="comment"># p \notin &#123;-1, 1&#125;</span></span><br><span class="line"><span class="comment"># q \notin &#123;-1, 1&#125;</span></span><br><span class="line"><span class="comment"># p * q = N</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># via:</span></span><br><span class="line"><span class="comment"># a^2 - 4 &gt;= 0 &lt;=&gt; a \notin &#123;-1, 1&#125;</span></span><br><span class="line"><span class="comment"># b^2 - 4 &gt;= 0 &lt;=&gt; b \notin &#123;-1, 1&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># arithmetic circuit:</span></span><br><span class="line"><span class="comment"># p * q = N</span></span><br><span class="line"><span class="comment"># a1^2 + a2^2 + a3^2 + a4^2 = p^2 - 4</span></span><br><span class="line"><span class="comment"># b1^2 + b2^2 + b3^2 + b4^2 = q^2 - 4</span></span><br></pre></td></tr></table></figure>
@@ -255,8 +259,8 @@
 <table>
 <thead>
 <tr>
-<th><img src="/2025/03/10/kalmarctf2025/image/1.png" alt="image"></th>
-<th><img src="/2025/03/10/kalmarctf2025/image/2.png" alt="image"></th>
+<th><img src="/2025/03/10/kalmarctf2025/images/1.png" alt="image"></th>
+<th><img src="/2025/03/10/kalmarctf2025/images/2.png" alt="image"></th>
 </tr>
 </thead>
 </table>

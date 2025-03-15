@@ -6,11 +6,13 @@
     <content><![CDATA[<p>I played with r3kapig last weekend, and we managed to solve 5 out of 8 crypto challs. </p>
 <span id="more"></span>
 
-<h1 id="ZZKAoK-6-solves"><a href="#ZZKAoK-6-solves" class="headerlink" title="ZZKAoK (6 solves)"></a>ZZKAoK (6 solves)</h1><ul>
+<h1 id="ZZKAoK-6-solves"><a href="#ZZKAoK-6-solves" class="headerlink" title="ZZKAoK (6 solves)"></a>ZZKAoK (6 solves)</h1><blockquote>
+<ul>
 <li><a href="ZZKAoK/client.sage">client.sage</a></li>
 <li><a href="ZZKAoK/server.py">server.py</a></li>
 <li><a href="ZZKAoK/intarg.py">intarg.py</a></li>
 </ul>
+</blockquote>
 <p>I’ll explain this challenge following my path during the contest -&gt; logical confusion and nonsense.</p>
 <h3 id="Zk-Proof-System"><a href="#Zk-Proof-System" class="headerlink" title="Zk Proof System"></a>Zk Proof System</h3><p>Here comes a proof system for integer factorization. Given $N$, the Prover $\mathcal{P}$ can show the knowledge of two factors $(p, q)$ satisfying $N &#x3D; p \cdot q$ to the Verifier $\mathcal{V}$, though the following constraints:</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># relation to prove:</span></span><br><span class="line"><span class="comment"># p \notin &#123;-1, 1&#125;</span></span><br><span class="line"><span class="comment"># q \notin &#123;-1, 1&#125;</span></span><br><span class="line"><span class="comment"># p * q = N</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># via:</span></span><br><span class="line"><span class="comment"># a^2 - 4 &gt;= 0 &lt;=&gt; a \notin &#123;-1, 1&#125;</span></span><br><span class="line"><span class="comment"># b^2 - 4 &gt;= 0 &lt;=&gt; b \notin &#123;-1, 1&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># arithmetic circuit:</span></span><br><span class="line"><span class="comment"># p * q = N</span></span><br><span class="line"><span class="comment"># a1^2 + a2^2 + a3^2 + a4^2 = p^2 - 4</span></span><br><span class="line"><span class="comment"># b1^2 + b2^2 + b3^2 + b4^2 = q^2 - 4</span></span><br></pre></td></tr></table></figure>
@@ -85,8 +87,8 @@
 <table>
 <thead>
 <tr>
-<th><img src="/2025/03/10/kalmarctf2025/image/1.png" alt="image"></th>
-<th><img src="/2025/03/10/kalmarctf2025/image/2.png" alt="image"></th>
+<th><img src="/2025/03/10/kalmarctf2025/images/1.png" alt="image"></th>
+<th><img src="/2025/03/10/kalmarctf2025/images/2.png" alt="image"></th>
 </tr>
 </thead>
 </table>
@@ -94,6 +96,83 @@
 ]]></content>
       <tags>
         <tag>zkp</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SECCON CTF 2025</title>
+    <url>/2025/03/04/secconctf2025/</url>
+    <content><![CDATA[<p>I participated SECCON 13th Final as a member of P1G SEKAI this weekend, and we finally got 4th among international teams.</p>
+<p><img src="/2025/03/04/secconctf2025/images/2.jpg" alt="rank"></p>
+<p>Nice crypto challenges, and I solved 3 out of 4. IF ONLY I’d ever taken some time to study UOV.</p>
+<p><img src="/2025/03/04/secconctf2025/images/1.png" alt="solve"></p>
+<p>Or maybe I was just too nervous.</p>
+<p>XO</p>
+<h1 id="RSA-8-solved"><a href="#RSA-8-solved" class="headerlink" title="RSA+ (8 solved)"></a>RSA+ (8 solved)</h1><blockquote>
+<ul>
+<li><a href="RSA+/task.py">task.py</a></li>
+</ul>
+</blockquote>
+<p>It turns out that we can send two composite number $(p, q)$, both smaller than 512 bits. Then we can just find all the solutions on $p_i$ and combine them with CRT. I believe there exists a better way though.</p>
+<blockquote>
+<p>solution: <a href="RSA+/exp.py">exp.py</a></p>
+</blockquote>
+<h1 id="DLP-7-solved"><a href="#DLP-7-solved" class="headerlink" title="DLP+ (7 solved)"></a>DLP+ (7 solved)</h1><blockquote>
+<ul>
+<li><a href="DLP+/task.py">task.py</a></li>
+</ul>
+</blockquote>
+<p>A simple idea is that we try to control $g^x$ (or $h^x$) to be small. Then we can get $h^x$ with some bruteforce and solve DLP to get $x$. I found some luck on Mersenne Prime $p &#x3D; 2^n - 1$, where $g^x mod p$ is very small. Finally I chose M2281 for effective DLP solver. </p>
+<p>Which took me a lot of time and luck, definitely NOT that effective.</p>
+<blockquote>
+<p>solution: <a href="DLP+/exp.py">exp.py</a></p>
+</blockquote>
+<p>@Sceleri and @soon_haari used $p &#x3D; 2^a \cdot 3^b + 1$. It does make more sense since $g &#x3D; 2^{a-1} \cdot 3^b$ and $h &#x3D; 2^a \cdot 3^{b-1}$ (same in our solution). But I donot want to go through it again so just let it go.</p>
+<p><img src="/2025/03/04/secconctf2025/images/3.png" alt="image"></p>
+<h1 id="hell-summon-6-solved"><a href="#hell-summon-6-solved" class="headerlink" title="hell_summon (6 solved)"></a>hell_summon (6 solved)</h1><blockquote>
+<ul>
+<li><a href="hell_summon/task.py">task.py</a></li>
+</ul>
+</blockquote>
+<p>I spent the whole afternoon on this one in day1.</p>
+<p>We have 42 pairs of $(m_i, c_i &#x3D; r \cdot (m_i  \oplus H) + e_i \pmod{p})$, where $e_i$ is due to the truncation. We rewrite $m_i \oplus H$ as $\Sigma_{j&#x3D;0}^{39} (m_{i, j} + H_{j} - 2 \cdot m_{i, j} \cdot H_{j}) \cdot 2^{j}$. </p>
+<p>$$\Rightarrow \Sigma_{j&#x3D;0}^{39} r \cdot H_{j} \cdot ((1 - 2 \cdot m_{i, j}) \cdot 2^{j}) + r \cdot m_i  + e_i \pmod{p}$$</p>
+<p>Orthogonal Lattice seems to be an adorable choice, and it worked well. On the first attempt I found one short vector $v$ where $\vec{v} \cdot \vec{c} &#x3D; \vec{v} \cdot \vec{e} \pmod{p}$, and it’s small enough to omit $p$. But I didn’t manage to solve $\vec{e}$.</p>
+<p>On another attempt at midnight, I used vectors $(v_0, v_1)$ orthogonal to $\Sigma_{j&#x3D;0}^{39} r \cdot H_{j} \cdot ((1 - 2 \cdot m_{i, j}) \cdot 2^{j})$. Then we have two equations $r \cdot (\vec{v_i} \cdot \vec{m}) + \vec{v_i} \cdot \vec{e} \pmod{p}$, where $\vec{v_i} \cdot \vec{e}$ is small. Now we can solve it as a simple HNP.</p>
+<blockquote>
+<p>solution: <a href="hell_summon/exp.py">exp.py</a></p>
+</blockquote>
+<p>Definitely not a pleasing code but whatever.</p>
+<h1 id="x-x-4-solved"><a href="#x-x-4-solved" class="headerlink" title="*x_x (4 solved)"></a>*x_x (4 solved)</h1><blockquote>
+<ul>
+<li><a href="x_x/task.sage">task.sage</a></li>
+</ul>
+</blockquote>
+<p>Working on it. UOV and sth bluhbluhbluh.</p>
+<h1 id="In-Japan"><a href="#In-Japan" class="headerlink" title="In Japan"></a>In Japan</h1><p>My first time to Japan, also my first time abroad. Not bad actually.</p>
+<table>
+<thead>
+<tr>
+<th><img src="/2025/03/04/secconctf2025/images/seccon.jpg" alt="seccon"></th>
+<th><img src="/2025/03/04/secconctf2025/images/view.jpg" alt="view"></th>
+<th><img src="/2025/03/04/secconctf2025/images/food.jpg" alt="food"></th>
+</tr>
+</thead>
+</table>
+<p>My teammates are very strong! Glad to work with them XD<br>And also great to meet many friends from P1G SEKAI.</p>
+<p><img src="/2025/03/04/secconctf2025/images/view1.jpg" alt="view1"></p>
+<table>
+<thead>
+<tr>
+<th><img src="/2025/03/04/secconctf2025/images/view2.jpg" alt="view2"></th>
+<th><img src="/2025/03/04/secconctf2025/images/view3.jpg" alt="view3"></th>
+</tr>
+</thead>
+</table>
+<p>Sincere thanks to @crazyman :D (Wish I could go to Mt. Fuji.)<br>I realy enjoyed Tokyo. It’d be better if I can hang out for one or two two more days.</p>
+]]></content>
+      <tags>
+        <tag>UOV</tag>
+        <tag>OL</tag>
       </tags>
   </entry>
 </search>
