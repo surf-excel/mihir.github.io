@@ -219,7 +219,7 @@
 </blockquote>
 <p>With linear transformation, we have $C(k-2, 2)$ quadratic equations about $key_i$ now, containing $n + C(n+1, 2)$ monomials. Then we can do LLL on the linearized system to recover the key. One can ignore some equations and utilize <code>flatter</code> for better efficiency.</p>
 <blockquote>
-<p><a href="srdnlenctf2025/zk-Openings/exp.py">exp.py</a></p>
+<p><a href="zk-Openings/exp.py">exp.py</a></p>
 </blockquote>
 <p>There maybe some difference in my code since it’s implemented months ago XD</p>
 ]]></content>
