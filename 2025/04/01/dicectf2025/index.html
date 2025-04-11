@@ -14,7 +14,7 @@
 <meta property="og:description" content="Time: 2025.03.29-31 (online) fairy-ring (7 solves)https:&#x2F;&#x2F;github.com&#x2F;defund&#x2F;ctf&#x2F;tree&#x2F;master&#x2F;dicectf-quals-2025&#x2F;fairy-ringhttps:&#x2F;&#x2F;priv.pub&#x2F;posts&#x2F;dicectf-quals-2025&#x2F;#fairy-ring   server.py https:&#x2F;&#x2F;githu">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2025-04-01T06:38:02.000Z">
-<meta property="article:modified_time" content="2025-04-11T15:11:00.132Z">
+<meta property="article:modified_time" content="2025-04-11T15:31:33.966Z">
 <meta property="article:author" content="rec">
 <meta property="article:tag" content="UOV">
 <meta name="twitter:card" content="summary">
@@ -154,7 +154,7 @@
       
         <time datetime="2025-04-01T06:38:02.000Z" class="dt-published" itemprop="datePublished">2025-04-01</time>
         
-        (Updated: <time datetime="2025-04-11T15:11:00.132Z" class="dt-updated" itemprop="dateModified">2025-04-11</time>)
+        (Updated: <time datetime="2025-04-11T15:31:33.966Z" class="dt-updated" itemprop="dateModified">2025-04-11</time>)
         
       
     </div>
@@ -208,12 +208,14 @@
 <p>The main idea is to find a linear space $\mathcal{O}$ with rank $r \geq m$, and for all $\vec{o} \in \mathcal{O}$ we have $\mathcal{P}(\vec{o}) &#x3D; \vec{0}$. It’s also worth mentioning that for any valid signature $\vec{s}$, $\vec{s} + \mathcal{O}$ is still valid.</p>
 <h3 id="Ring-Signature"><a href="#Ring-Signature" class="headerlink" title="Ring Signature"></a>Ring Signature</h3><p>In this challenge, we have a ring signature scheme based on UOV. Any one of the $n$ users can generate a signature on behalf of the group, and no one can distinguish the signer.</p>
 <ul>
-<li>$\mathcal{Setup}:$ Each user generates a UOV key pair $(pub, prv)$.</li>
-<li>$\mathcal{Sign}:$ For message $m$, user $a$ randomly chooses $(\vec{x_1}, …, \vec{x_n})$ and compute $\vec{t} &#x3D; \mathcal{Hash}(m) - \sum_{i \neq a}^n \vec{x_i}^\top \cdot pub_i \cdot \vec{x_i}$. Then user $a$ solve $\vec{x_a}^\top \cdot pub_a \cdot \vec{x_a} &#x3D; \vec{t}$ with $prv$. The signature is $(x_1, …, x_n)$.</li>
-<li>$\mathcal{Verify}:$ Check whether $\mathcal{Hash}(m) &#x3D; \sum_{i}^n \vec{x_i}^\top \cdot pub_i \cdot \vec{x_i}$ satisfies.</li>
+<li>$\mathcal{Setup}:$ Each user generates a UOV key pair $(\mathcal{P}, \mathcal{F})$.</li>
+<li>$\mathcal{Sign}:$ For message $m$, user $a$ randomly chooses $(\vec{x_1}, …, \vec{x_{a-1}}, \vec{x_{a+1}},…, \vec{x_n})$ and compute $\vec{t} &#x3D; \mathcal{Hash}(m) - \sum_{i \neq a}^n \mathcal{P_i}(\vec{x_i})$. Then user $a$ solve $\mathcal{P_a}(\vec{x_a}) &#x3D; \vec{t}$ with the private key $\mathcal{F_a}$. The signature is $(\vec{x_1}, …, \vec{x_n})$.</li>
+<li>$\mathcal{Verify}:$ Check whether $\mathcal{Hash}(m) &#x3D; \sum_{i}^n \mathcal{P_i}(\vec{x_i})$ satisfies.</li>
 </ul>
 <h3 id="Solution"><a href="#Solution" class="headerlink" title="Solution"></a>Solution</h3><p>The solution is easy but elegant.</p>
-<p>Since we can pick the same public key twice, it’s possible for us to forge a valid signature for any message (Yeah it’s completely broken). Consider a public key $\mathcal{P}$, we have $\vec{t} &#x3D; \mathcal{P}(\vec{x} + \vec{y}) - \mathcal{P}(\vec{x}) &#x3D; \mathcal{P}’(\vec{x}, \vec{y}) + \mathcal{P}(\vec{y})$ for any $(\vec{x}, \vec{y})$. It turns out $\vec{t}$ is linear to $\vec{x}$, so we can just fix $\vec{y}$ and find a valid $\vec{x}$. And that’s all we need to solve this challenge XD</p>
+<p>We can pick the same public key more than once, and actually it’s possible for us to forge a valid signature for any message (yeah it’s completely broken). Consider a public key $\mathcal{P}$, we have</p>
+<p>$$\vec{t} &#x3D; \mathcal{P}(\vec{x} + \vec{y}) - \mathcal{P}(\vec{x}) &#x3D; \mathcal{P}’(\vec{x}, \vec{y}) + \mathcal{P}(\vec{y})$$</p>
+<p>Here $\vec{t}$ is linear to $\vec{x}$, that’s all we need to solve this challenge. For a given message $m$, we can pick the same public key $\mathcal{P}$ twice, then randomly choose a $\vec{y}$ and find the solution $\mathcal{Hash}(m) &#x3D; \mathcal{P}(\vec{x} + \vec{y}) - \mathcal{P}(\vec{x})$ (it’s the same for ‘$+$’ and ‘$\oplus$’ on $\mathbb{F_{2^8}}$). And $(\vec{x} + \vec{y}, \vec{x})$ is a valid signature.</p>
 <p><a href="fairy-ring/exp.py">exp.py</a></p>
 
   </div>
