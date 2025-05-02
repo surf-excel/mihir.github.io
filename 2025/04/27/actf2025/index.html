@@ -16,7 +16,7 @@
 <meta property="og:image" content="http://rechn0.github.io/2025/04/27/actf2025/images/rank.png">
 <meta property="og:image" content="http://rechn0.github.io/2025/04/27/actf2025/images/pvkp.png">
 <meta property="article:published_time" content="2025-04-27T07:50:13.000Z">
-<meta property="article:modified_time" content="2025-05-02T16:24:23.454Z">
+<meta property="article:modified_time" content="2025-05-02T16:28:56.470Z">
 <meta property="article:author" content="rec">
 <meta property="article:tag" content="LLL">
 <meta property="article:tag" content="FHE">
@@ -156,7 +156,7 @@
       
         <time datetime="2025-04-27T07:50:13.000Z" class="dt-published" itemprop="datePublished">2025-04-27</time>
         
-        (Updated: <time datetime="2025-05-02T16:24:23.454Z" class="dt-updated" itemprop="dateModified">2025-05-03</time>)
+        (Updated: <time datetime="2025-05-02T16:28:56.470Z" class="dt-updated" itemprop="dateModified">2025-05-03</time>)
         
       
     </div>
@@ -229,7 +229,7 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">p = <span class="number">1502305675703953507826564356364207463785905265358954425050832597353379827611347779894929874274487297076504174110953417469304402049079223143080164648064147459</span></span><br><span class="line">q = (p - <span class="number">1</span>) // <span class="number">2</span></span><br><span class="line">qs = [(<span class="number">2</span>, <span class="number">12</span>), (<span class="number">2449952539</span>, <span class="number">1</span>), (<span class="number">2580715139</span>, <span class="number">1</span>), (<span class="number">2792523953</span>, <span class="number">1</span>), (<span class="number">2945474351</span>, <span class="number">1</span>), (<span class="number">2996317717</span>, <span class="number">1</span>), (<span class="number">3172879987</span>, <span class="number">1</span>), (<span class="number">3229817321</span>, <span class="number">1</span>), (<span class="number">3272969519</span>, <span class="number">1</span>), (<span class="number">3435471803</span>, <span class="number">1</span>), (<span class="number">3606091481</span>, <span class="number">1</span>), (<span class="number">3613773421</span>, <span class="number">1</span>), (<span class="number">3696075863</span>, <span class="number">1</span>), (<span class="number">3706535681</span>, <span class="number">1</span>), (<span class="number">3729911617</span>, <span class="number">1</span>), (<span class="number">3912962413</span>, <span class="number">1</span>), (<span class="number">3919762169</span>, <span class="number">1</span>)]</span><br><span class="line"><span class="keyword">assert</span> q == prod(qi**i <span class="keyword">for</span> qi, i <span class="keyword">in</span> qs) + <span class="number">1</span></span><br></pre></td></tr></table></figure>
 
 <p>Here $p &#x3D; 2*q + 1$, while $q$ is another big prime and $q-1$ is very smooth. All other $p$ have the same structure so we can just use this one in the following steps. To achieve that, I just kept reconnecting until the server chose my prime.</p>
-<p>Another point worth noting is that we cannot just choose $g$ arbitrarily, but need to pass <code>lotteryCenter.defineG(g)</code>. After some experimentation, I found that some certain primes can pass the check. While it doesn’t expose the underlying checking strategy, we still have the opportunity to get a valid one by keeping constructing some primes.</p>
+<p>Another point worth noting is that we cannot just choose $g$ arbitrarily because of <code>lotteryCenter.defineG(g)</code>. After some tests, we found that some certain primes can pass the check. While it doesn’t expose the underlying checking strategy, we still have the opportunity to get a valid one by keeping constructing some primes.</p>
 <h3 id="Solution-1-Unintended-1"><a href="#Solution-1-Unintended-1" class="headerlink" title="Solution 1 (Unintended)"></a>Solution 1 (Unintended)</h3><p>Considering $q-1$ is smooth, with several 32bit small primes, a PH-BSGS style attack might be available:</p>
 <ol>
 <li>Choose a generator $g_i$ from the $q_i$-order subgroup of $\mathbb{F_q}$, here we have $q_i | (q-1)$.</li>
@@ -270,7 +270,8 @@
 </ul>
 <p>In this challenge we use a simpler encode&#x2F;decode strategy, the original CKKS scheme involves complex number and some other complicated operations.</p>
 <p>It’s important to know that CKKS handles float data, which means $m$ is a float sequence (but $pt$ and other parts are not). You can find out that we actually cannot recover the original $pt$ in CKKS. The noise is kept in $pt’$ and after decoding, it exists as a small error in $m$.</p>
-<h3 id="CKKS-Homomorphic-Computation"><a href="#CKKS-Homomorphic-Computation" class="headerlink" title="CKKS: Homomorphic Computation"></a>CKKS: Homomorphic Computation</h3>
+<h3 id="CKKS-Homomorphic-Computation"><a href="#CKKS-Homomorphic-Computation" class="headerlink" title="CKKS: Homomorphic Computation"></a>CKKS: Homomorphic Computation</h3><p>Will do this part later XD</p>
+
   </div>
 </article>
 
