@@ -16,7 +16,7 @@
 <meta property="og:image" content="http://rechn0.github.io/2025/04/27/actf2025/images/rank.png">
 <meta property="og:image" content="http://rechn0.github.io/2025/04/27/actf2025/images/pvkp.png">
 <meta property="article:published_time" content="2025-04-27T07:50:13.000Z">
-<meta property="article:modified_time" content="2025-05-04T09:04:19.691Z">
+<meta property="article:modified_time" content="2025-05-04T17:06:07.461Z">
 <meta property="article:author" content="rec">
 <meta property="article:tag" content="LLL">
 <meta property="article:tag" content="FHE">
@@ -98,6 +98,8 @@
     <span id="actions">
       <ul>
         
+        <li><a class="icon" aria-label="Previous post" href="/2025/07/14/codegatectffinal2025/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
         
         <li><a class="icon" aria-label="Next post" href="/2025/04/05/codegatectf2025/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
         
@@ -156,7 +158,7 @@
       
         <time datetime="2025-04-27T07:50:13.000Z" class="dt-published" itemprop="datePublished">2025-04-27</time>
         
-        (Updated: <time datetime="2025-05-04T09:04:19.691Z" class="dt-updated" itemprop="dateModified">2025-05-04</time>)
+        (Updated: <time datetime="2025-05-04T17:06:07.461Z" class="dt-updated" itemprop="dateModified">2025-05-05</time>)
         
       
     </div>
@@ -270,14 +272,6 @@
 </ul>
 <p>In this challenge we use a simpler encode&#x2F;decode strategy, the original CKKS scheme involves complex number and some other complicated operations.</p>
 <p>It’s important to know that CKKS handles float data, which means $m$ is a float sequence (but $pt$ and other parts are not). You can find out that we actually cannot recover the original $pt$ and $m$ in CKKS. The noise is retained and after decoding, it exists as a small error in $m$.</p>
-<!-- ### CKKS: Homomorphic Computation
-
-Will do this part later
-
-### CKKS: Key Switching
-
-### CKKS: Galois Operation -->
-
 <h3 id="Solution-1-Intended"><a href="#Solution-1-Intended" class="headerlink" title="Solution 1 (Intended)"></a>Solution 1 (Intended)</h3><p>In this challenge our target is to submit the <strong>exact</strong> original <code>plain</code>.</p>
 <p>The intended solution uses an interesting feature about CKKS, which may be counter-intuitive to FHE newbies (me). By encoding the decrypted <code>plain</code> again, we can recover the exact $pt + e$, and then we can recover $sk$ with the ciphtext pair $ct$.</p>
 <p>I’m not sure about other FHE schemes but for CKKS, it’s <strong>NOT</strong> a secure option to open a decryption oracle. I think the main reason is that CKKS uses floats instead of integers.</p>
