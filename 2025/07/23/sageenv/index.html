@@ -15,7 +15,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://rechn0.github.io/2025/07/23/sageenv/images/1.png">
 <meta property="article:published_time" content="2025-07-23T02:57:56.000Z">
-<meta property="article:modified_time" content="2025-07-29T13:38:32.756Z">
+<meta property="article:modified_time" content="2025-07-29T13:46:58.235Z">
 <meta property="article:author" content="rec">
 <meta property="article:tag" content="sagemath">
 <meta name="twitter:card" content="summary">
@@ -154,7 +154,7 @@
       
         <time datetime="2025-07-23T02:57:56.000Z" class="dt-published" itemprop="datePublished">2025-07-23</time>
         
-        (Updated: <time datetime="2025-07-29T13:38:32.756Z" class="dt-updated" itemprop="dateModified">2025-07-29</time>)
+        (Updated: <time datetime="2025-07-29T13:46:58.235Z" class="dt-updated" itemprop="dateModified">2025-07-29</time>)
         
       
     </div>
@@ -215,7 +215,7 @@
 <p>With the corresponding outputs in your own Sagemath, of course.</p>
 </blockquote>
 <p>For those who favor using Jupyter Notebook, this also works. You just need to use Sagemath as a jupyter kernel, and Pylance will effectively parse your codes.</p>
-<h2 id="A-Fresh-Take"><a href="#A-Fresh-Take" class="headerlink" title="A Fresh Take"></a>A Fresh Take</h2><p>Through further experimentation, I discovered a more interesting method. You see, we can use <code>.../bin/sage-python</code> mentioned above as a python interpreter, can we set up a virtual environment using <code>venv</code>? The answer is yes, but it’s just a pure python environment (without <code>sage</code> package).</p>
+<h2 id="A-Fresh-Take"><a href="#A-Fresh-Take" class="headerlink" title="A Fresh Take"></a>A Fresh Take</h2><p>Through further explorations, I discovered a more interesting method. You see, we can use <code>.../bin/sage-python</code> mentioned above as a python interpreter, can we set up a virtual environment using <code>venv</code>? The answer is yes, but it’s just a pure python environment (without <code>sage</code> package).</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">rec:/ $ /Applications/SageMath-10-6.app/Contents/Frameworks/Sage.framework/Versions/10.6/local/var/lib/sage/venv-python3.12.5/bin/sage-python -m venv new_sage_venv</span><br><span class="line">rec:/ $ <span class="built_in">source</span> new_sage_venv/bin/activate</span><br><span class="line">(new_sage_venv) rec:/ $ python</span><br><span class="line">Python 3.12.5 (main, Feb 25 2025, 12:37:41) [Clang 16.0.0 (clang-1600.0.26.6)] on darwin</span><br><span class="line">Type <span class="string">&quot;help&quot;</span>, <span class="string">&quot;copyright&quot;</span>, <span class="string">&quot;credits&quot;</span> or <span class="string">&quot;license&quot;</span> <span class="keyword">for</span> more information.</span><br><span class="line">&gt;&gt;&gt; from sage.all import *</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File <span class="string">&quot;&lt;stdin&gt;&quot;</span>, line 1, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">ModuleNotFoundError: No module named <span class="string">&#x27;sage&#x27;</span></span><br><span class="line">&gt;&gt;&gt; </span><br></pre></td></tr></table></figure>
 
 <p>But it turns out that we can import <code>sage</code> by inheriting the system packages with <code>--system-site-packages</code>. In this way, all virtual environments created share the same Sagemath base environment, and we can make special configurations in each of them. </p>
