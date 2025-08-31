@@ -347,6 +347,70 @@ The initialization is done by contract `Setup`. In short there are two `DEX` con
       </tags>
   </entry>
   <entry>
+    <title>Hitcon CTF 2025</title>
+    <url>/2025/08/25/hitconctf2025/</url>
+    <content><![CDATA[<p>I played Hitcon CTF last weekend with r3kapig, enjoyed.</p>
+<h2 id="MRSA"><a href="#MRSA" class="headerlink" title="MRSA"></a>MRSA</h2><blockquote>
+<ul>
+<li><a href="MRSA/chall.py">chall.py</a></li>
+</ul>
+</blockquote>
+<p>In this challenge, we need to recover a $k \cdot k$ small (8bit) secret matrix $M$ with $C &#x3D; M^e \pmod{n}$, where $n$ is omitted.</p>
+<h3 id="Our-Solution"><a href="#Our-Solution" class="headerlink" title="Our Solution"></a>Our Solution</h3><p>We implemented our solution based on the truth that $M \cdot C &#x3D; C \cdot M \pmod{n}$, which gives us $k \cdot k$ equations about $M$. Take a certain position $(i, j)$ as an example: </p>
+<p>$$<br>\begin{aligned}<br>(M \cdot C)[i, j] &amp;&#x3D; (C \cdot M)[i, j] \pmod{n} \\<br>M[i] \cdot C^T[j] &amp;&#x3D; C[i] \cdot M^T[j] \pmod{n} \\<br>&amp;\Rightarrow \\<br>t_{i, j} \cdot n &amp;&#x3D; M[i] \cdot C^T[j] - C[i] \cdot M^T[j]<br>\end{aligned}<br>$$</p>
+<p>And we can construct an equation on $\mathbb{Z}$ with two separate positions $(i_0, j_0)$ and $(i_1, j_1)$:</p>
+<p>$$<br>t_{i_1, j_1} \cdot (M[i_0] \cdot C^T[j_0] - C[i_0] \cdot M^T[j_0]) &#x3D; t_{i_0, j_0} \cdot (M[i_1] \cdot C^T[j_1] - C[i_1] \cdot M^T[j_1])<br>$$</p>
+<p>Here $t$ is a small value, since $M$ is very small. So we can combine $t \cdot M[i]$ as a secret and solve it by applying <code>LLL</code> to the kernel space. For an optimized strategy, we can pick $i_0 &#x3D; i_1 &#x3D; i$ and reduce the unknown variables from $k \cdot 4 &#x3D; 64$ to $k \cdot 3 &#x3D; 48$, that is:</p>
+<p>$$<br>(t_{i, j_1} \cdot M[i]) \cdot C^T[j_0] - (t_{i, j_0} \cdot M[i]) \cdot C^T[j_1] &#x3D; C[i] \cdot (t_{i, j_1} \cdot M^T[j_0] - t_{i, j_0} \cdot M^T[j_1])<br>$$</p>
+<p>With the equation, we can find $(t \cdot M[i]) \Rightarrow M[i]$, and solve $M$ row by row. </p>
+<p>It’s worth mentioning that for any position $(i, j)$, $(M[i, i], M[j, j])$ will always be eliminated in the equation. So we can only recover $M$ without $M[i, i]$. But it’s enough for us to brute force 3 bytes to get the flag.</p>
+<blockquote>
+<ul>
+<li><a href="MRSA/exp.py">exp.py</a></li>
+</ul>
+</blockquote>
+<h3 id="Other-solutions"><a href="#Other-solutions" class="headerlink" title="Other solutions"></a>Other solutions</h3><p>We can implement some new solutions with <a href="https://en.wikipedia.org/wiki/Cayley%E2%80%93Hamilton_theorem">Cayley-Hamiltion Theorem</a>.</p>
+<blockquote>
+<p>For a $k \cdot k$ matrix $M$, let $p_{M}(x) &#x3D; \Sigma_{i&#x3D;0}^{k-1} a_i \cdot x^i$ be the characteristic polynomial of $M$, we have $p_{M}(M) &#x3D; 0$.</p>
+</blockquote>
+<p>And this, my friend, gives us a way to find a linear expression with $[M^0, …, M^{k-1}]$ for any $M^e$, since we can use $p_M(M)$ to build a quotient ring.</p>
+<p>Back to the challenge, we can find $[b_0, …, b_{k-1}]$ such that $C &#x3D; \Sigma_{i&#x3D;0}^{k-1} b_i \cdot M^i \pmod{n}$. Since $M^i$ is still small enough, we can costruct $k \cdot k$ HCLPs with each $C[i, j]$ and $[M^0[i, j], …, M^{k-1}[i, j]]$.</p>
+<h2 id="BabyLWE"><a href="#BabyLWE" class="headerlink" title="BabyLWE"></a>BabyLWE</h2><blockquote>
+<ul>
+<li><a href="BabyLWE/chall.py">chall.py</a></li>
+</ul>
+</blockquote>
+<p>In this challenge we need to solve a LWE problem with a special noise distribution: $e_i$ is not small but picked from a random ternary error set $errs$ ($|errs| &#x3D; 3$).</p>
+<p>Months before, me and @糖醋小鸡块 discussed about the binary error set scenario ($|errs| &#x3D; 2$). Based on the fact that for any binary set $errs &#x3D; \{ e_0, e_1 \}$, we can always find an affine map $f(x) &#x3D; a \cdot x + b$, such that $f(errs) &#x3D; \{0, 1\}$. And this affined error vector is short enough to be obtained on the following lattice: </p>
+<p>$$<br>b &#x3D; s \cdot A + e \pmod{p}<br>\Rightarrow<br>\begin{bmatrix}<br>A \\<br>b \\<br>\textbf{1}^m \\<br>p \cdot I<br>\end{bmatrix}<br>$$</p>
+<p>where $\textbf{1}^m$ is an all-1 vector and $I$ is the identity matrix. With the recovered binary vector, we can learn the pick-up situations of the error vector and solve LWE in a linear system of $(s, errs)$.</p>
+<p>The method also works in this challenge. We’re not able to find a strictly small vector (say binary vector) through affine map with $|errs| &gt; 2$. But it turns out that in this challenge, an affined ternary vector is short enough to be solved through <code>LLL</code>. Then we can solve LWE with the same steps above.</p>
+<h2 id="Pedantic"><a href="#Pedantic" class="headerlink" title="Pedantic"></a>Pedantic</h2><blockquote>
+<ul>
+<li><a href="Pedantic/server.py">server.py</a></li>
+</ul>
+</blockquote>
+<p>In this challenge we need to break a zkp protocol with bad Fiat-Shamir Transformation.</p>
+<h3 id="Fiat-Shamir-Transformation"><a href="#Fiat-Shamir-Transformation" class="headerlink" title="Fiat-Shamir Transformation"></a>Fiat-Shamir Transformation</h3><p>Fiat-Shamir Transformation is a practical way to transform an interactive sigma protocol into a non-interactive version. In short, we construct a determined Random Oracle by hashing the current states, and replace the “challenge” generated by the verifier. You can check how <code>hash_points_to_scalars</code> is used in both <code>prove</code> and <code>verify</code> in this challenge.</p>
+<p>RO is the core of the security here: we must make sure the hash function is well-constructed, and the current states are carefully selected. So, the linear structure of <code>hash_points_to_scalars</code> is definitely not a good choice. Xp</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">hash_points_to_scalars</span>(<span class="params">pts: <span class="built_in">list</span>[Point], n: <span class="built_in">int</span></span>):</span><br><span class="line">    s = <span class="built_in">sum</span>([hash_point(pt) <span class="keyword">for</span> pt <span class="keyword">in</span> pts]) % q</span><br><span class="line">    ret = []</span><br><span class="line">    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">        ret.append(s)</span><br><span class="line">        s = (<span class="number">1337</span> * s + <span class="number">7331</span>) % q</span><br><span class="line">    <span class="keyword">return</span> ret</span><br></pre></td></tr></table></figure>
+
+<h3 id="Our-Solution-1"><a href="#Our-Solution-1" class="headerlink" title="Our Solution"></a>Our Solution</h3><p>The most part of the protocol remains secure due to <code>secp256k1</code>, which means we’re not able to forge a valid proof without the knowledge of <code>x</code>. But if we can predict the challenge <code>c</code> in some way, things will be a little different since we can randomly pick <code>z</code> first, and compute <code>Gr = Y*c - G*z</code>.</p>
+<p>For the iteration part, we can use a fixed point:</p>
+<p>$$<br>c &#x3D; a \cdot c + b \Rightarrow c &#x3D; \frac{b}{1 - a} \pmod{q}<br>$$</p>
+<p>Now <code>c</code> is the same in each round, we can focus on how to construct a valid <code>Grs</code> to get the target <code>c</code>. We can generate a set of <code>zs</code> and the corresponding <code>Grs</code> first. Consider there exists a valid subset of <code>Grs</code> satisfying our target, we have:</p>
+<p>$$<br>c &#x3D; \Sigma_{i} k_i \cdot \mathcal{H}(Gr_i) \pmod{q}<br>$$</p>
+<p>where $k_i$ is a binary variable and $\mathcal{H}$ is the hash function <code>hash_point</code>. This is a typical knapsack problem, and we can try to find a solution with <code>LLL</code>.</p>
+<h2 id="Paranoid"><a href="#Paranoid" class="headerlink" title="(*)Paranoid"></a>(*)Paranoid</h2><p>In this challenge we need to break a zkp protocol with <strong>NOT THAT BAD</strong> Fiat-Shamir Transformation.</p>
+<h3 id="Some-Discussions"><a href="#Some-Discussions" class="headerlink" title="Some Discussions"></a>Some Discussions</h3><p>For this one, we can still <strong>1)</strong> fix the <code>c</code> first, and <strong>2)</strong> construct a valid <code>Grs</code> to get <code>c</code>. But this time we’re not able to find a fixed point, so the iteration part is unavoidable. </p>
+<p>TBD XD</p>
+]]></content>
+      <tags>
+        <tag>LLL</tag>
+        <tag>Fiat-Shamir</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>ZZKAoK::Kalmar CTF 2025</title>
     <url>/2025/03/10/kalmarctf2025/</url>
     <content><![CDATA[<p>Time: 2025.03.09-10 (online)</p>
