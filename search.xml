@@ -134,15 +134,15 @@
     <url>/2025/12/09/blackhatmeactffinal2025/</url>
     <content><![CDATA[<p>Time: 2025.12.02-04 (onsite)</p>
 <p>I attended the Black Hat MEA CTF 2025 Final with r3kapig in Riyadh, Saudi Arabia.</p>
-<p>After three days working we got the 2nd place 🥈 in the competition, gg all my teammates!</p>
+<p>After three days working we got the 2nd place 🥈 in the competition, GG to all my teammates!</p>
 <p><img src="/2025/12/09/blackhatmeactffinal2025/images/scoreboard.png" alt="scoreboard"></p>
-<h1 id="day1"><a href="#day1" class="headerlink" title="day1"></a>day1</h1><h2 id="que"><a href="#que" class="headerlink" title="que"></a>que</h2><blockquote>
+<h1 id="day1"><a href="#day1" class="headerlink" title="day1"></a>day1</h1><h2 id="Que"><a href="#Que" class="headerlink" title="Que?"></a>Que?</h2><blockquote>
 <ul>
 <li><a href="day1/que/que.py">que.py</a></li>
 </ul>
 </blockquote>
-<p>@chatgpt gg, didn’t get a chance to take a look.</p>
-<h2 id="TDS"><a href="#TDS" class="headerlink" title="TDS"></a>TDS</h2><blockquote>
+<p>@chatgpt didn’t get a chance to take a look. XD</p>
+<h2 id="Tampering-Detection-System"><a href="#Tampering-Detection-System" class="headerlink" title="Tampering Detection System"></a>Tampering Detection System</h2><blockquote>
 <ul>
 <li><a href="day1/TDS/server.py">server.py</a></li>
 </ul>
@@ -178,10 +178,10 @@
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">Seed 15901 gives [0, 1, 2, 3, 4]</span><br><span class="line">Seed 22733 gives [4, 1, 2, 3, 0]</span><br><span class="line">Seed 15054 gives [1, 2, 3, 0, 4]</span><br><span class="line">Seed 17502 gives [1, 2, 3, 4, 0]</span><br></pre></td></tr></table></figure>
 
 <p>With 4 equations we can obtain a linear equation of the form $a \cdot x + b \cdot y + c &#x3D; 0 \pmod{n}$. It’s indeed solvable with LLL, but we need some (too much) luck to get <strong>2 small variables</strong>. This costed me a lot of time.</p>
-<p>Then I realized if we glue 4 variables together, there’s only 2 variables left and we can obtain a univariate polynomial with 2 equations. Just do it twice:</p>
+<p>Then I realized if we glue 4 variables together, there’s only 2 variables left in 2 equations, and we can obtain a univariate polynomial. Just do it twice:</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">Seed 15901 gives [0, 1, 2, 3, 4]</span><br><span class="line">Seed 17502 gives [1, 2, 3, 4, 0]</span><br><span class="line">Seed 4145  gives [0, 2, 3, 4, 5]</span><br><span class="line">Seed 15589 gives [2, 3, 4, 5, 0]</span><br></pre></td></tr></table></figure>
 
-<p>With 2 polynomials, we can solve the first variable by <code>gcd</code>. This is another linear equation with 2 variables (the first sentence and the flag sentence) but much smaller, so we just LLL and get the flag.</p>
+<p>With 2 polynomials, we can solve the first variable by <code>gcd</code>. This gives us another linear equation with 2 variables (the first sentence and the flag sentence) but much smaller (there’s only 32 bytes unknown in the flag sentence), so we just LLL and get the flag.</p>
 <blockquote>
 <ul>
 <li><a href="day2/doloRSitAmet/exp.py">exp.py</a></li>
@@ -202,22 +202,22 @@
 <li>permuted (lime[6]) key addition</li>
 </ol>
 <h3 id="Boomerang-Style-Attack"><a href="#Boomerang-Style-Attack" class="headerlink" title="Boomerang Style Attack"></a>Boomerang Style Attack</h3><p>We are provided Encryption&#x2F;Decryption Oracle with <strong>additional</strong> fault injection on the key. But first let’s think about what we can do with <strong>xor</strong> fault injection.</p>
-<p>An interesting observation is that $P \oplus K &#x3D; (P \oplus 1) \oplus (K \oplus 1)$, so if we inject 1-bit fault on both the key and <strong>the plaintext</strong> at the same position, it shows no difference after the first round of encryption. But with the second key addition, the fault will be injected and the final ciphertext goes completely different.</p>
+<p>An interesting observation is that $P \oplus K &#x3D; (P \oplus 1) \oplus (K \oplus 1)$, so if we inject 1 bit fault on both the key and <strong>the plaintext</strong> at the same position, it shows no difference after the first round of encryption. But with the second key addition, the fault will be injected and the final ciphertext goes completely different.</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Encryption</span><br><span class="line">↓   P0, K                   →   P0+perm[0](1), K+1</span><br><span class="line"></span><br><span class="line">:   P0                      →   P0+perm[0](1)</span><br><span class="line">↓perm[0] key add</span><br><span class="line">:   P0+perm[0](K)           →   P0+perm[0](1)+perm[0](K+1) = P0+perm[0](K)</span><br><span class="line">↓16 sub[1]-perm[2]</span><br><span class="line">:   P1                      →   P1</span><br><span class="line">↓perm[3] key add</span><br><span class="line">:   P1+perm[3](K)           →   P1+perm[3](K+1)</span><br><span class="line">↓16 sub[4]-perm[5]</span><br><span class="line">:   P2                      →   P2&#x27;</span><br><span class="line">↓perm[6] key add</span><br><span class="line">:   P2+perm[6](K)           →   P2&#x27;+perm[6](K+1)</span><br><span class="line"></span><br><span class="line">=   P2+perm[6](K)           →   P2&#x27;+perm[6](K+1)</span><br></pre></td></tr></table></figure>
 
 <p>Why don’t we do it again? This time let’s inject on both the key and <strong>the ciphertext</strong>, and do the decryption.</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">=   P0+perm[0](1)           →   P0&#x27;&#x27;</span><br><span class="line"></span><br><span class="line">:   P0+perm[0](1)           →   P0&#x27;&#x27;</span><br><span class="line">↑perm[0] key add</span><br><span class="line">:   P0+perm[0](K)           →   P0&#x27;&#x27;+perm[0](K)</span><br><span class="line">↑16 sub[1]-perm[2]</span><br><span class="line">:   P1                      →   P1+perm[3](1)</span><br><span class="line">↑perm[3] key add</span><br><span class="line">:   P1+perm[3](K+1)         →   P1+perm[3](K+1)</span><br><span class="line">↑16 sub[4]-perm[5]</span><br><span class="line">:   P2&#x27;                     →   P2&#x27;</span><br><span class="line">↑perm[6] key add</span><br><span class="line">:   P2&#x27;+perm[6](K+1)        →   P2&#x27;+perm[6](K)</span><br><span class="line"></span><br><span class="line">↑   P2&#x27;+perm[6](K+1), K+1   →   P2&#x27;+perm[6](K), K</span><br><span class="line">Decryption</span><br></pre></td></tr></table></figure>
 
-<p>This means a lot: now we have a pair of $(P_0, P_0’’)$ which only have 1-bit difference after the first round of encryption. Let take another step forward…</p>
+<p>This means a lot: now we have a pair of $(P_0, P_0’’)$ which only have 1 bit difference after the first round of encryption. Let take another step forward…</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Encryption</span><br><span class="line">↓   P0&#x27;&#x27;, K                 →   P0&#x27;&#x27;+perm[0](1), K+1</span><br><span class="line"></span><br><span class="line">:   P0&#x27;&#x27;                    →   P0&#x27;&#x27;+perm[0](1)</span><br><span class="line">↓perm[0] key add</span><br><span class="line">:   P0&#x27;&#x27;+perm[0](K)         →   P0&#x27;&#x27;+perm[0](1)+perm[0](K+1) = P0&#x27;&#x27;+perm[0](K)</span><br><span class="line">↓16 sub[1]-perm[2]</span><br><span class="line">:   P1+perm[3](1)           →   P1+perm[3](1)</span><br><span class="line">↓perm[3] key add</span><br><span class="line">:   P1+perm[3](K+1)         →   P1+perm[3](K+1)+perm[3](K+1) = P1</span><br><span class="line">↓16 sub[4]-perm[5]</span><br><span class="line">:   P2&#x27;                     →   P2</span><br><span class="line">↓perm[6] key add</span><br><span class="line">:   P2&#x27;+perm[6](K)          →   P2+perm[6](K+1) = P2+perm[6](K)+perm[6](1)</span><br><span class="line"></span><br><span class="line">=   P2&#x27;+perm[6](K)          →   P2+perm[6](K)+perm[6](1)</span><br></pre></td></tr></table></figure>
 
-<p>Finally, we manage to obtain a ciphertext with 1-bit difference compared to the original one. Based on this we can construct a distinguisher with our additional fault injection:</p>
+<p>Finally, we manage to obtain a ciphertext with 1 bit difference compared to the original one. Based on this we can construct a distinguisher with our additional fault injection:</p>
 <ol>
 <li>Encrypt a random plaintext with the original key.</li>
-<li>Inject 1-bit additional fault on the i-th bit of the key.</li>
-<li>Obtain the magic ciphertext with 1-bit fault injected.</li>
+<li>Inject 1 bit additional fault on the i-th bit of the key.</li>
+<li>Obtain the magic ciphertext with 1 bit fault injected.</li>
 </ol>
-<p>If success, the additional fault on the i-th bit equals to a 1-bit xor fault. For the LSB of the key, this implies the i-th bit is 0. Injection on the MSB may always cause 1-bit fault so we need to bruteforce it instead.</p>
+<p>If success, the additional fault on the i-th bit equals to a 1 bit xor fault. For most parts of the key, this implies the i-th bit is 0 (with high probability). Injection on the MSB may always cause 1 bit fault so we need to bruteforce it instead.</p>
 <ul>
 <li><a href="day2/limeade/exp.py">exp.py</a></li>
 </ul>
@@ -244,7 +244,7 @@
 <li><a href="day3/NoisyChannel/exp.py">exp.py</a></li>
 </ul>
 </blockquote>
-<h2 id="lccllc"><a href="#lccllc" class="headerlink" title="(*)lccllc"></a>(*)lccllc</h2><blockquote>
+<h2 id="LCC-LLC"><a href="#LCC-LLC" class="headerlink" title="(*)LCC LLC"></a>(*)LCC LLC</h2><blockquote>
 <ul>
 <li><a href="day3/lccllc/app.py">app.py</a></li>
 <li><a href="day3/lccllc/crypto.py">crypto.py</a></li>
@@ -264,6 +264,72 @@
 </li>
 </ul>
 </blockquote>
+<p>Here comes a McEliece challenge.</p>
+<h3 id="Decode-Failure-Oracle"><a href="#Decode-Failure-Oracle" class="headerlink" title="Decode Failure Oracle"></a>Decode Failure Oracle</h3><p>Core functions below. </p>
+<p>The server uses McEliece to generate access tokens, and our target is to forge a valid token with admin privilege. </p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">McEliece</span>(<span class="title class_ inherited__">BinaryGoppaCode</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">Encrypt</span>(<span class="params">self, msg: <span class="built_in">bytes</span>, eloc: <span class="type">List</span>[<span class="built_in">int</span>] = <span class="literal">None</span></span>) -&gt; <span class="built_in">bytes</span>:</span><br><span class="line">        <span class="string">&quot;&quot;&quot; Encrypts a message. &quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">assert</span> <span class="number">8</span> * <span class="built_in">len</span>(msg) &lt;= <span class="variable language_">self</span>.k</span><br><span class="line">        mvec = Bytes2BitVec(msg, <span class="variable language_">self</span>.k)</span><br><span class="line">        <span class="keyword">if</span> eloc <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">            evec = <span class="variable language_">self</span>._RandomMaxWeight()</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            evec = Matrix(GF(<span class="number">2</span>), [<span class="number">1</span> <span class="keyword">if</span> i <span class="keyword">in</span> eloc <span class="keyword">else</span> <span class="number">0</span> <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="variable language_">self</span>.n)])</span><br><span class="line">        cvec = mvec * <span class="variable language_">self</span>.maskedG + evec</span><br><span class="line">        <span class="keyword">return</span> BitVec2Bytes(cvec)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">Decrypt</span>(<span class="params">self, cip: <span class="built_in">bytes</span></span>) -&gt; <span class="type">Tuple</span>[<span class="built_in">bytes</span>, <span class="built_in">set</span>]:</span><br><span class="line">        <span class="string">&quot;&quot;&quot; Decrypts a ciphertext. &quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">assert</span> <span class="built_in">len</span>(cip) &lt;= -(-<span class="variable language_">self</span>.n // <span class="number">8</span>)</span><br><span class="line">        cvec = Bytes2BitVec(cip, <span class="variable language_">self</span>.n)</span><br><span class="line">        mvec, evec = <span class="variable language_">self</span>.DecodeCodeWord(cvec * <span class="variable language_">self</span>.Pinv)</span><br><span class="line">        eloc = <span class="built_in">set</span>([i <span class="keyword">for</span> i,j <span class="keyword">in</span> <span class="built_in">enumerate</span>((evec * <span class="variable language_">self</span>.P).<span class="built_in">list</span>()) <span class="keyword">if</span> j])</span><br><span class="line">        <span class="keyword">return</span> BitVec2Bytes(mvec * <span class="variable language_">self</span>.Sinv), eloc</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">LCC</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">GenerateToken</span>(<span class="params">self, username: <span class="built_in">str</span>, admin: <span class="built_in">bool</span> = <span class="literal">False</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        <span class="string">&quot;&quot;&quot; Generates a token. &quot;&quot;&quot;</span></span><br><span class="line">        salt = os.urandom(<span class="number">24</span>)</span><br><span class="line">        token = json.dumps(&#123;</span><br><span class="line">            <span class="string">&#x27;username&#x27;</span> : username,</span><br><span class="line">            <span class="string">&#x27;admin&#x27;</span> : admin,</span><br><span class="line">            <span class="string">&#x27;salt&#x27;</span> : B64Encode(salt)</span><br><span class="line">        &#125;).encode()</span><br><span class="line">        timestamp, eloc, etag = <span class="variable language_">self</span>.HashErrorLocs(salt)</span><br><span class="line">        encToken = <span class="variable language_">self</span>.code.Encrypt(token, eloc)</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;.&#x27;</span>.join(B64Encode(i) <span class="keyword">for</span> i <span class="keyword">in</span> [timestamp, salt, etag, encToken])</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">LoadToken</span>(<span class="params">self, token: <span class="built_in">str</span></span>) -&gt; <span class="built_in">dict</span>:</span><br><span class="line">        <span class="string">&quot;&quot;&quot; Loads a token. &quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            timestamp, salt, etag, encToken = [B64Decode(i) <span class="keyword">for</span> i <span class="keyword">in</span> token.split(<span class="string">&#x27;.&#x27;</span>)]</span><br><span class="line">            decToken, eloc = <span class="variable language_">self</span>.code.Decrypt(encToken)</span><br><span class="line">            loadedToken = json.loads(decToken.strip(<span class="string">b&#x27;\0&#x27;</span>))</span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            <span class="keyword">raise</span> ValueError(<span class="string">&#x27;Failed to load token...&#x27;</span>)</span><br><span class="line">        <span class="comment"># _, _eloc, _etag = self.HashErrorLocs(salt, timestamp)</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="comment"># assert _eloc == eloc</span></span><br><span class="line">            <span class="comment"># assert _etag == etag</span></span><br><span class="line">            <span class="keyword">assert</span> salt == B64Decode(loadedToken[<span class="string">&#x27;salt&#x27;</span>])</span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            <span class="keyword">raise</span> ValueError(<span class="string">&#x27;Invalid token...&#x27;</span>)</span><br><span class="line">        <span class="keyword">return</span> loadedToken</span><br><span class="line"></span><br><span class="line"><span class="comment"># Homepage</span></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span>, methods=[<span class="string">&#x27;GET&#x27;</span>]</span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">index</span>():</span><br><span class="line">    token = request.cookies.get(<span class="string">&#x27;token&#x27;</span>)</span><br><span class="line">    <span class="keyword">if</span> token:</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            userData = lcc.LoadToken(token)</span><br><span class="line">            flash(<span class="string">&#x27;Succesfully loaded your token.&#x27;</span>, <span class="string">&#x27;success&#x27;</span>)</span><br><span class="line">            <span class="keyword">if</span> userData[<span class="string">&#x27;admin&#x27;</span>] == <span class="literal">True</span>:</span><br><span class="line">                content = FLAG.decode()</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                content = <span class="string">&#x27;Nothing to see here. Where you looking for something?&#x27;</span></span><br><span class="line">            <span class="keyword">return</span> render_template(</span><br><span class="line">                <span class="string">&#x27;index.html&#x27;</span>,</span><br><span class="line">                username = <span class="string">&#x27; &#x27;</span> + userData[<span class="string">&#x27;username&#x27;</span>],</span><br><span class="line">                content = content</span><br><span class="line">            )</span><br><span class="line">        <span class="keyword">except</span> ValueError <span class="keyword">as</span> e:</span><br><span class="line">            flash(<span class="string">&#x27;ERROR:: &#123;&#125;&#x27;</span>.<span class="built_in">format</span>(<span class="built_in">str</span>(e)), <span class="string">&#x27;error&#x27;</span>)</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;ERROR:: &#123;&#125;&#x27;</span>.<span class="built_in">format</span>(<span class="built_in">str</span>(e)))</span><br><span class="line">            flash(<span class="string">&#x27;Something went wrong...&#x27;</span>, <span class="string">&#x27;error&#x27;</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        flash(<span class="string">&#x27;No token found. Get a token by visiting &quot;./gettoken/&lt;username&gt;&quot;.&#x27;</span>, <span class="string">&#x27;warning&#x27;</span>)</span><br><span class="line">    <span class="keyword">return</span> render_template(<span class="string">&#x27;index.html&#x27;</span>, username=<span class="string">&#x27;&#x27;</span>, content=<span class="string">&#x27;Please load your token or generate a new one.&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>There’s not so much we can do actually, since we’re only provided with some partly controllable tokens (even without the public key).</p>
+<p>You can notice that <code>LoadToken</code> does not check <code>eloc</code> or <code>etag</code>, which may lead to something interesting. For McEliece, <code>Decrypt</code> works if there’re <strong>less than</strong> <code>t</code> positions of errors. This means if we inject 1 more bit error into a token, it will not be decoded successfully. But if we inject noise again at a “dirty” position, the effects of the noise will be cancelled out and it still serves as a valid token (again, because <code>eloc</code> is not checked).</p>
+<p>So we can flip each bit of the token and try to decode it. By checking the response status, we can leak the “dirty” bits of the token, thus recovering a “clean” McEliece token. This gives us some advantages to forge new tokens based on the existing ones: if one try to do so with “dirty” tokens (i.e. linear combinations), noise accumulation will render the token unusable.</p>
+<h3 id="Optimization"><a href="#Optimization" class="headerlink" title="Optimization"></a>Optimization</h3><p>For one token recovery, we need <code>n</code> times interactions, which costed 20~30 minutes during the competition. Parallelization should be a good strategy in <code>flask</code> but it didn’t work due to some deployment issues. This took all my time during the competition and it’s kinda disappointing actually…still cool challenge though :D</p>
+<p>Another optimization is that we can flip 2 bits at one time:</p>
+<ol>
+<li>2 “clean” bits: the token will be <strong>rejected</strong> since there’re <code>t+2</code> “dirty” bits.</li>
+<li>1 “clean” bit and 1 “dirty” bit: the token will be <strong>accepted</strong> since there’re still <code>t</code> “dirty” bits.</li>
+<li>2 “dirty” bits: the token will be <strong>accepted</strong> since there’re <code>t-2</code> “dirty” bits.</li>
+</ol>
+<p>By doing this <code>n/2</code> times, we can ambiguously locate each “dirty” bits. With another <code>2*t</code> (less than this actually) checks and we can recover the exact <code>eloc</code>.</p>
+<h3 id="JSON-Manipulation"><a href="#JSON-Manipulation" class="headerlink" title="JSON Manipulation"></a>JSON Manipulation</h3><p>Let’s delve deeper into this challenge. It may be a choice to recover the public key with enough “clean” tokens, which enables us to forge any valid tokens. But it requires too much interactions.</p>
+<p>Since we can control the <code>username</code> part of the token, it can be optimized with some JSON tricks. But first we need to make something clear. </p>
+<p>You may notice that <code>json</code> works a little different on the server. This is because <code>app.json</code> instead of <code>json</code> will be called when <code>flask.app</code> is working, which will sort the keys first before serializing a JSON object.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> *</span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line">a = &#123;<span class="string">&quot;username&quot;</span>: <span class="string">&quot;&quot;</span>, <span class="string">&quot;admin&quot;</span>: <span class="literal">False</span>, <span class="string">&quot;salt&quot;</span>: <span class="string">&quot;&quot;</span>&#125;</span><br><span class="line">app.json.sort_keys</span><br><span class="line"><span class="comment"># True</span></span><br><span class="line">app.json.dumps(a)</span><br><span class="line"><span class="comment"># &#123;&quot;admin&quot;: false, &quot;salt&quot;: &quot;&quot;, &quot;username&quot;: &quot;&quot;&#125;</span></span><br><span class="line">app.json.sort_keys = <span class="literal">False</span></span><br><span class="line">app.json.dumps(a)</span><br><span class="line"><span class="comment"># &#123;&quot;username&quot;: &quot;&quot;, &quot;admin&quot;: false, &quot;salt&quot;: &quot;&quot;&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line">json.dumps(a)</span><br><span class="line"><span class="comment"># &#123;&quot;username&quot;: &quot;&quot;, &quot;admin&quot;: false, &quot;salt&quot;: &quot;&quot;&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>In this case, we are enabled to manipulate JSON by constructing a malicious <code>username</code>. For instance: </p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> json</span><br><span class="line">username = <span class="string">&#x27;&quot;,&quot;admin&quot;:true,&quot;salt&quot;:&quot;&#x27;</span></span><br><span class="line">a = <span class="string">&#x27;&#123;&quot;admin&quot;: false, &quot;salt&quot;: &quot;&quot;, &quot;username&quot;: &quot;$&quot;&#125;&#x27;</span>.replace(<span class="string">&quot;$&quot;</span>, username)</span><br><span class="line">json.loads(a)</span><br><span class="line"><span class="comment"># &#123;&#x27;admin&#x27;: True, &#x27;salt&#x27;: &#x27;&#x27;, &#x27;username&#x27;: &#x27;&#x27;&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>By doing this we can 1) set <code>admin</code> to <code>True</code> and 2) set <code>salt</code> to a valid <code>B64</code> string (an empty string here).</p>
+<p>We can not do this directly. Instead we construct 3 usernames satisfying <code>xor(a, xor(b, c)) = target</code>, and xor the corresponding tokens together. With high probability, we can get a valid token (since we need the <code>salt</code> part to be valid as well). Here we only need 2 “clean” tokens and the result token will still be accepted. </p>
+<h1 id="In-Saudi-Arabia"><a href="#In-Saudi-Arabia" class="headerlink" title="In Saudi Arabia"></a>In Saudi Arabia</h1><p>Still can’t believe we did it, my teammates are so strong. Got some luck too I guess.</p>
+<table>
+<thead>
+<tr>
+<th><img src="/2025/12/09/blackhatmeactffinal2025/images/team1.jpg" alt="team1"></th>
+</tr>
+</thead>
+</table>
+<p>Met so many old and new friends here, enjoyed. </p>
+<p>But 3-day competition is really tiring and we didn’t have so much time or energy to travel around. Will do more exploitation in the city if I come next year.</p>
+<table>
+<thead>
+<tr>
+<th><img src="/2025/12/09/blackhatmeactffinal2025/images/team2.jpg" alt="team2"></th>
+<th><img src="/2025/12/09/blackhatmeactffinal2025/images/bhmea.jpg" alt="bhmea"></th>
+</tr>
+</thead>
+</table>
+<table>
+<thead>
+<tr>
+<th><img src="/2025/12/09/blackhatmeactffinal2025/images/3.jpg" alt="3"></th>
+<th><img src="/2025/12/09/blackhatmeactffinal2025/images/4.jpg" alt="4"></th>
+</tr>
+</thead>
+</table>
+<table>
+<thead>
+<tr>
+<th><img src="/2025/12/09/blackhatmeactffinal2025/images/2.jpg" alt="2"></th>
+</tr>
+</thead>
+</table>
+<table>
+<thead>
+<tr>
+<th><img src="/2025/12/09/blackhatmeactffinal2025/images/5.jpg" alt="5"></th>
+</tr>
+</thead>
+</table>
 ]]></content>
       <tags>
         <tag>AES</tag>
@@ -352,6 +418,87 @@
 ]]></content>
       <tags>
         <tag>ECC</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Codegate CTF 2025 Final (Seoul, Korea🇰🇷)</title>
+    <url>/2025/07/14/codegatectffinal2025/</url>
+    <content><![CDATA[<p>Time: 2025.07.10-11 (onsite)</p>
+<p>I played Codegate CTF Final with r3kapig last week and we got 5th in the end. </p>
+<p>Sincere thanks to my teammates and the organizers, I really enjoyed the game.</p>
+<p><img src="/2025/07/14/codegatectffinal2025/images/scoreboard.png" alt="scoreboard"></p>
+<h2 id="LEAk-12-solves"><a href="#LEAk-12-solves" class="headerlink" title="LEAk (12 solves)"></a>LEAk (12 solves)</h2><blockquote>
+<ul>
+<li><a href="LEAk/LEAk.py">LEAk.py</a></li>
+</ul>
+</blockquote>
+<p>This is a standard implementation of LEA, which is a ARX-style block cipher. Our target is to recover the key through 15 at maximum times of fault injection without the value of the fault.</p>
+<p>And my solution is based on <a href="https://eprint.iacr.org/2020/1534.pdf">this</a>. </p>
+<p>The core of the attack is an algebraic representation of modular addition on $\mathbb{F}_{2^n}$. In short, we have the following equations if we try to inject a fault into the modular addition.</p>
+<p>$$A \boxplus B &#x3D; C \Rightarrow A \boxplus (B \oplus \Delta B) &#x3D; C \oplus \Delta C$$</p>
+<p>$$<br>\begin{cases}<br>c_0 &#x3D; a_0 + b_0 \\<br>c_i &#x3D; a_i + b_i + a_{i-1}b_{i-1} + (a_{i-1}+b_{i-1})(a_{i-1}+b_{i-1}+c_{i-1})\\<br>c_0+\Delta c_{0} &#x3D; a_0 + b_0 + \Delta b_0 \\<br>c_i+\Delta c_{i} &#x3D; a_i + b_i + \Delta b_i + a_{i-1}(b_{i-1}+\Delta b_{i-1}) + (a_{i-1}+b_{i-1}+\Delta b_{i-1})(a_{i-1}+b_{i-1}+\Delta b_{i-1}+c_{i-1})<br>\end{cases}<br>$$</p>
+<p>With the knowledge of $(C, \Delta B, \Delta C)$, we can build a binary system with $2n$ variables, which can be solved through <code>Groebner Basis</code> or <code>z3-solver</code>. And we can recover the low $n-1$ bits of $(A, B)$ with enough samples (apparently we have no information about MSB).</p>
+<p>In the second part we just need to choose the injection points, collect the outputs and recover the internal values using the above analysis. I implemented the paper’s strategy and here is a sketch.</p>
+<ol>
+<li>$\rightarrow X_{22}[0]$ for $RK_{23}[0]$ (31bit)</li>
+<li>$\rightarrow X_{23}[1]$ for $RK_{23}[1] \oplus RK_{23}[2]$ (31bit)</li>
+<li>$\rightarrow X_{23}[2]$ for $RK_{23}[3] \oplus RK_{23}[4]$ (31bit)</li>
+<li>$\rightarrow X_{22}[0]$ (reuse stage 1) for $RK_{23}[5]$ (30bit)</li>
+</ol>
+<p>For more details you can check the original paper (and my exploit code). With some bruteforce on MSBs, we can recover the secret key.</p>
+<p>In the paper the author takes 6 samples for each steps, and here we have only 5 (we need 1 sample for the original ciphertext). This slightly influences the success rate so we need several attempts.</p>
+<blockquote>
+<ul>
+<li><a href="LEAk/exp.py">exp.py</a></li>
+</ul>
+</blockquote>
+<p>It turns out the whole challenge is z3able but whatever :)</p>
+<p>I actually enjoyed the implementation part, with snacks and classical music. Love and peace @codegate.</p>
+<h2 id="smartLock-10-solves"><a href="#smartLock-10-solves" class="headerlink" title="smartLock (10 solves)"></a>smartLock (10 solves)</h2><blockquote>
+<ul>
+<li><a href="smartLock/smartLock.zip">smartLock</a></li>
+</ul>
+</blockquote>
+<p>A tiny bug is that the server checks the answer by sending $m^d \pmod{n}$ and querying $m$, so we can just pass all the tests with the public keys. This can be figured out through the remote outputs.</p>
+<p>According to our REer, we may need to solve 10 ACDP in 50s with strict parameters. I’ve not tried it but it might be all about optimizations ig.</p>
+<blockquote>
+<ul>
+<li><a href="smartLock/exp.py">exp.py</a></li>
+</ul>
+</blockquote>
+<h2 id="In-Korea"><a href="#In-Korea" class="headerlink" title="In Korea"></a>In Korea</h2><p>Charming Seoul City. The weather is similar to that in my hometown.</p>
+<p>Kinda hot in the first two days, but it’s just pleasant after that.</p>
+<p>Glad to meet so many old and new friends :D</p>
+<table>
+<thead>
+<tr>
+<th><img src="/2025/07/14/codegatectffinal2025/images/myongtong.jpg" alt="myongtong"></th>
+<th><img src="/2025/07/14/codegatectffinal2025/images/yondae.jpg" alt="yondae"></th>
+</tr>
+</thead>
+</table>
+<!-- ## (blockchain) DEX (8 solves)
+
+> - [DEX](DEX/DEX.zip)
+
+Later that night I tried the blockchain challenge with my teammates. Something new for me XD
+
+The structure of the challenge is well-designed and a little complicated for me. But many of them are meant for the correctness and fairness of the challenge, so I'll just focus on the core part.
+
+The initialization is done by contract `Setup`. In short there are two `DEX` contracts, deployed on `CODE` and `GATE` chain. At first there are `DEX_SUPPLY` of `tokenA/B/C` on each DEX, and our target is to possess all of them (`2*DEX_SUPPLY` of each token). And of course, we don't have enough money to do that.
+
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">contract <span class="title class_">Setup</span> &#123;</span><br><span class="line">    uint256 public constant <span class="variable constant_">CODE_CHAIN</span> = <span class="number">10</span>;</span><br><span class="line">    uint256 public constant <span class="variable constant_">GATE_CHAIN</span> = <span class="number">100</span>;</span><br><span class="line"></span><br><span class="line">    address public dex;</span><br><span class="line">    address public tokenA;</span><br><span class="line">    address public tokenB;</span><br><span class="line">    address public tokenC;</span><br><span class="line">    address public faucet;</span><br><span class="line">    address public faucetLogic;</span><br><span class="line">    bool public isSolved = <span class="literal">false</span>;</span><br><span class="line">    uint256 public constant <span class="variable constant_">DEX_SUPPLY</span> = <span class="number">600</span> ether;</span><br><span class="line">    <span class="title function_">constructor</span>(<span class="params">address _faucet</span>) &#123;</span><br><span class="line">        </span><br><span class="line">        faucetLogic = <span class="title function_">address</span>(<span class="keyword">new</span> <span class="title class_">FaucetLogic</span>());</span><br><span class="line">        faucet  = _faucet;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(block.<span class="property">chainid</span> == <span class="variable constant_">CODE_CHAIN</span>) &#123;</span><br><span class="line">            tokenA = <span class="title function_">address</span>(<span class="keyword">new</span> <span class="title class_">Token</span>(<span class="string">&quot;CODE USDC&quot;</span>, <span class="string">&quot;cUSDC&quot;</span>));</span><br><span class="line">            tokenB = <span class="title function_">address</span>(<span class="keyword">new</span> <span class="title class_">Token</span>(<span class="string">&quot;CODE PURR&quot;</span>, <span class="string">&quot;cPURR&quot;</span>));</span><br><span class="line">            tokenC = <span class="title function_">address</span>(<span class="keyword">new</span> <span class="title class_">Token</span>(<span class="string">&quot;CODE MOODENG&quot;</span>, <span class="string">&quot;cMOODENG&quot;</span>));</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            tokenA = <span class="title function_">address</span>(<span class="keyword">new</span> <span class="title class_">Token</span>(<span class="string">&quot;GATE USDC&quot;</span>, <span class="string">&quot;gUSDC&quot;</span>));</span><br><span class="line">            tokenB = <span class="title function_">address</span>(<span class="keyword">new</span> <span class="title class_">Token</span>(<span class="string">&quot;GATE PURR&quot;</span>, <span class="string">&quot;gPURR&quot;</span>));</span><br><span class="line">            tokenC = <span class="title function_">address</span>(<span class="keyword">new</span> <span class="title class_">Token</span>(<span class="string">&quot;GATE MOODENG&quot;</span>, <span class="string">&quot;gMOODENG&quot;</span>));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="title class_">Token</span>[] memory tokens = <span class="keyword">new</span> <span class="title class_">Token</span>[](<span class="number">3</span>);</span><br><span class="line">        tokens[<span class="number">0</span>] = <span class="title class_">Token</span>(tokenA);</span><br><span class="line">        tokens[<span class="number">1</span>] = <span class="title class_">Token</span>(tokenB);</span><br><span class="line">        tokens[<span class="number">2</span>] = <span class="title class_">Token</span>(tokenC);</span><br><span class="line"></span><br><span class="line">        dex = <span class="title function_">address</span>(<span class="keyword">new</span> <span class="title function_">DEX</span>(msg.<span class="property">sender</span>, tokens));</span><br><span class="line">        <span class="title class_">Token</span>(tokenA).<span class="title function_">mint</span>(<span class="title function_">address</span>(dex), <span class="variable constant_">DEX_SUPPLY</span>);</span><br><span class="line">        <span class="title class_">Token</span>(tokenB).<span class="title function_">mint</span>(<span class="title function_">address</span>(dex), <span class="variable constant_">DEX_SUPPLY</span>);</span><br><span class="line">        <span class="title class_">Token</span>(tokenC).<span class="title function_">mint</span>(<span class="title function_">address</span>(dex), <span class="variable constant_">DEX_SUPPLY</span>);</span><br><span class="line"></span><br><span class="line">        <span class="title class_">Token</span>(tokenA).<span class="title function_">transferOwnership</span>(msg.<span class="property">sender</span>);</span><br><span class="line">        <span class="title class_">Token</span>(tokenB).<span class="title function_">transferOwnership</span>(msg.<span class="property">sender</span>);</span><br><span class="line">        <span class="title class_">Token</span>(tokenC).<span class="title function_">transferOwnership</span>(msg.<span class="property">sender</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">getToken</span>(<span class="params"></span>) public &#123;</span><br><span class="line">        <span class="keyword">if</span>(block.<span class="property">chainid</span> == <span class="variable constant_">GATE_CHAIN</span>) &#123;</span><br><span class="line">            <span class="title class_">Token</span>(tokenA).<span class="title function_">transfer</span>(faucet, <span class="number">100</span> ether);</span><br><span class="line">            <span class="title class_">Token</span>(tokenB).<span class="title function_">transfer</span>(faucet, <span class="number">100</span> ether);</span><br><span class="line">            <span class="title class_">Token</span>(tokenC).<span class="title function_">transfer</span>(faucet, <span class="number">100</span> ether);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">solve</span>(<span class="params"></span>) public &#123;</span><br><span class="line">        <span class="built_in">require</span>(block.<span class="property">chainid</span> == <span class="variable constant_">CODE_CHAIN</span>, <span class="string">&quot;Can be solved only on CODE CHAIN&quot;</span>);</span><br><span class="line">        <span class="built_in">require</span>(<span class="title class_">Token</span>(tokenA).<span class="title function_">balanceOf</span>(msg.<span class="property">sender</span>) &gt;= <span class="variable constant_">DEX_SUPPLY</span> * <span class="number">2</span>, <span class="string">&quot;Not enough USDC&quot;</span>);</span><br><span class="line">        <span class="built_in">require</span>(<span class="title class_">Token</span>(tokenB).<span class="title function_">balanceOf</span>(msg.<span class="property">sender</span>) &gt;= <span class="variable constant_">DEX_SUPPLY</span> * <span class="number">2</span>, <span class="string">&quot;Not enough PURR&quot;</span>);</span><br><span class="line">        <span class="built_in">require</span>(<span class="title class_">Token</span>(tokenC).<span class="title function_">balanceOf</span>(msg.<span class="property">sender</span>) &gt;= <span class="variable constant_">DEX_SUPPLY</span> * <span class="number">2</span>, <span class="string">&quot;Not enough MOODENG&quot;</span>);</span><br><span class="line">        isSolved = <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>DEX</code> is the core contract in this challenge. The main duty for a DEX (Decentralized Exchange) is the exchange service, where users can exchange some <code>tokenA</code> to <code>tokenB</code> according to current exchange rate. </p>
+<p>Two <code>DEX</code> are deployed on different chains in this challenge. If one <code>DEX</code> exhausts a certain token, it’ll initiate a transfer request for more tokens with the other <code>DEX</code>, which actually completes a cross-chain exchange. <code>Message</code> related codes are used to handle cross-chain requirements, kinda cool.</p>
+<p>Here comes the core logic of <code>DEX</code> contract.</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">_swap</span>(<span class="params">address <span class="keyword">from</span>, address receiver, uint256 amount, bytes32 srcToken, bytes32 dstToken</span>) internal &#123;</span><br><span class="line">    uint256 rate = <span class="title function_">_getRate</span>(srcToken, dstToken);</span><br><span class="line">    <span class="title class_">Token</span> srcTokenAddress = <span class="title class_">Token</span>(tokenMapping[srcToken]);</span><br><span class="line">    <span class="title class_">Token</span> dstTokenAddress = <span class="title class_">Token</span>(tokenMapping[dstToken]);</span><br><span class="line">    uint256 targetAmount = amount * rate / <span class="number">1e6</span>;</span><br><span class="line">    uint256 diffAmount = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(dstTokenAddress.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>)) &lt; targetAmount) &#123;</span><br><span class="line">        diffAmount = targetAmount - dstTokenAddress.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>));</span><br><span class="line">        targetAmount = dstTokenAddress.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>));</span><br><span class="line">        amount = <span class="title function_">_getRate</span>(dstToken, srcToken) * targetAmount / <span class="number">1e6</span>;</span><br><span class="line">        emit <span class="title class_">MessageSent</span>(<span class="title class_">Message</span>(&#123;</span><br><span class="line">            <span class="attr">messageType</span>: <span class="title class_">MessageType</span>.<span class="property">LiquidityRequest</span>,</span><br><span class="line">            <span class="attr">from</span>: <span class="title function_">address</span>(<span class="variable language_">this</span>),</span><br><span class="line">            <span class="attr">receiver</span>: receiver,</span><br><span class="line">            <span class="attr">srcToken</span>: srcToken,</span><br><span class="line">            <span class="attr">dstToken</span>: dstToken,</span><br><span class="line">            <span class="attr">srcChainId</span>: block.<span class="property">chainid</span>,</span><br><span class="line">            <span class="attr">dstChainId</span>: block.<span class="property">chainid</span> == <span class="variable constant_">CODE_CHAIN</span> ? <span class="variable constant_">GATE_CHAIN</span> : <span class="variable constant_">CODE_CHAIN</span>,</span><br><span class="line">            <span class="attr">amount</span>: diffAmount</span><br><span class="line">        &#125;));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(<span class="keyword">from</span> != <span class="title function_">address</span>(<span class="variable language_">this</span>)) &#123;</span><br><span class="line">        srcTokenAddress.<span class="title function_">transferFrom</span>(<span class="keyword">from</span>, <span class="title function_">address</span>(<span class="variable language_">this</span>), amount);</span><br><span class="line">    &#125;</span><br><span class="line">    dstTokenAddress.<span class="title function_">transfer</span>(receiver, targetAmount);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>There exists a small vuln in the cross-chain process. Before <code>DEX</code> initiates the request, it recalculates the <code>amount = _getRate(dstToken, srcToken) * targetAmount / 1e6</code> first. Due to integer division, this may cause a loss of precision. If the <code>targetAmount</code> is accurately controlled, we can set <code>amount</code> to 0 and get paid for free.</p>
+<p>Therefore, we control the number of <code>tokenA/B/C</code> first through the exchange service, and then trigger this vuln via a cross-chain request. By repeating this process several times we can solve this challenge. –&gt;</p>
+]]></content>
+      <tags>
+        <tag>DFA</tag>
       </tags>
   </entry>
   <entry>
@@ -572,87 +719,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Codegate CTF 2025 Final (Seoul, Korea🇰🇷)</title>
-    <url>/2025/07/14/codegatectffinal2025/</url>
-    <content><![CDATA[<p>Time: 2025.07.10-11 (onsite)</p>
-<p>I played Codegate CTF Final with r3kapig last week and we got 5th in the end. </p>
-<p>Sincere thanks to my teammates and the organizers, I really enjoyed the game.</p>
-<p><img src="/2025/07/14/codegatectffinal2025/images/scoreboard.png" alt="scoreboard"></p>
-<h2 id="LEAk-12-solves"><a href="#LEAk-12-solves" class="headerlink" title="LEAk (12 solves)"></a>LEAk (12 solves)</h2><blockquote>
-<ul>
-<li><a href="LEAk/LEAk.py">LEAk.py</a></li>
-</ul>
-</blockquote>
-<p>This is a standard implementation of LEA, which is a ARX-style block cipher. Our target is to recover the key through 15 at maximum times of fault injection without the value of the fault.</p>
-<p>And my solution is based on <a href="https://eprint.iacr.org/2020/1534.pdf">this</a>. </p>
-<p>The core of the attack is an algebraic representation of modular addition on $\mathbb{F}_{2^n}$. In short, we have the following equations if we try to inject a fault into the modular addition.</p>
-<p>$$A \boxplus B &#x3D; C \Rightarrow A \boxplus (B \oplus \Delta B) &#x3D; C \oplus \Delta C$$</p>
-<p>$$<br>\begin{cases}<br>c_0 &#x3D; a_0 + b_0 \\<br>c_i &#x3D; a_i + b_i + a_{i-1}b_{i-1} + (a_{i-1}+b_{i-1})(a_{i-1}+b_{i-1}+c_{i-1})\\<br>c_0+\Delta c_{0} &#x3D; a_0 + b_0 + \Delta b_0 \\<br>c_i+\Delta c_{i} &#x3D; a_i + b_i + \Delta b_i + a_{i-1}(b_{i-1}+\Delta b_{i-1}) + (a_{i-1}+b_{i-1}+\Delta b_{i-1})(a_{i-1}+b_{i-1}+\Delta b_{i-1}+c_{i-1})<br>\end{cases}<br>$$</p>
-<p>With the knowledge of $(C, \Delta B, \Delta C)$, we can build a binary system with $2n$ variables, which can be solved through <code>Groebner Basis</code> or <code>z3-solver</code>. And we can recover the low $n-1$ bits of $(A, B)$ with enough samples (apparently we have no information about MSB).</p>
-<p>In the second part we just need to choose the injection points, collect the outputs and recover the internal values using the above analysis. I implemented the paper’s strategy and here is a sketch.</p>
-<ol>
-<li>$\rightarrow X_{22}[0]$ for $RK_{23}[0]$ (31bit)</li>
-<li>$\rightarrow X_{23}[1]$ for $RK_{23}[1] \oplus RK_{23}[2]$ (31bit)</li>
-<li>$\rightarrow X_{23}[2]$ for $RK_{23}[3] \oplus RK_{23}[4]$ (31bit)</li>
-<li>$\rightarrow X_{22}[0]$ (reuse stage 1) for $RK_{23}[5]$ (30bit)</li>
-</ol>
-<p>For more details you can check the original paper (and my exploit code). With some bruteforce on MSBs, we can recover the secret key.</p>
-<p>In the paper the author takes 6 samples for each steps, and here we have only 5 (we need 1 sample for the original ciphertext). This slightly influences the success rate so we need several attempts.</p>
-<blockquote>
-<ul>
-<li><a href="LEAk/exp.py">exp.py</a></li>
-</ul>
-</blockquote>
-<p>It turns out the whole challenge is z3able but whatever :)</p>
-<p>I actually enjoyed the implementation part, with snacks and classical music. Love and peace @codegate.</p>
-<h2 id="smartLock-10-solves"><a href="#smartLock-10-solves" class="headerlink" title="smartLock (10 solves)"></a>smartLock (10 solves)</h2><blockquote>
-<ul>
-<li><a href="smartLock/smartLock.zip">smartLock</a></li>
-</ul>
-</blockquote>
-<p>A tiny bug is that the server checks the answer by sending $m^d \pmod{n}$ and querying $m$, so we can just pass all the tests with the public keys. This can be figured out through the remote outputs.</p>
-<p>According to our REer, we may need to solve 10 ACDP in 50s with strict parameters. I’ve not tried it but it might be all about optimizations ig.</p>
-<blockquote>
-<ul>
-<li><a href="smartLock/exp.py">exp.py</a></li>
-</ul>
-</blockquote>
-<h2 id="In-Korea"><a href="#In-Korea" class="headerlink" title="In Korea"></a>In Korea</h2><p>Charming Seoul City. The weather is similar to that in my hometown.</p>
-<p>Kinda hot in the first two days, but it’s just pleasant after that.</p>
-<p>Glad to meet so many old and new friends :D</p>
-<table>
-<thead>
-<tr>
-<th><img src="/2025/07/14/codegatectffinal2025/images/myongtong.jpg" alt="myongtong"></th>
-<th><img src="/2025/07/14/codegatectffinal2025/images/yondae.jpg" alt="yondae"></th>
-</tr>
-</thead>
-</table>
-<!-- ## (blockchain) DEX (8 solves)
-
-> - [DEX](DEX/DEX.zip)
-
-Later that night I tried the blockchain challenge with my teammates. Something new for me XD
-
-The structure of the challenge is well-designed and a little complicated for me. But many of them are meant for the correctness and fairness of the challenge, so I'll just focus on the core part.
-
-The initialization is done by contract `Setup`. In short there are two `DEX` contracts, deployed on `CODE` and `GATE` chain. At first there are `DEX_SUPPLY` of `tokenA/B/C` on each DEX, and our target is to possess all of them (`2*DEX_SUPPLY` of each token). And of course, we don't have enough money to do that.
-
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">contract <span class="title class_">Setup</span> &#123;</span><br><span class="line">    uint256 public constant <span class="variable constant_">CODE_CHAIN</span> = <span class="number">10</span>;</span><br><span class="line">    uint256 public constant <span class="variable constant_">GATE_CHAIN</span> = <span class="number">100</span>;</span><br><span class="line"></span><br><span class="line">    address public dex;</span><br><span class="line">    address public tokenA;</span><br><span class="line">    address public tokenB;</span><br><span class="line">    address public tokenC;</span><br><span class="line">    address public faucet;</span><br><span class="line">    address public faucetLogic;</span><br><span class="line">    bool public isSolved = <span class="literal">false</span>;</span><br><span class="line">    uint256 public constant <span class="variable constant_">DEX_SUPPLY</span> = <span class="number">600</span> ether;</span><br><span class="line">    <span class="title function_">constructor</span>(<span class="params">address _faucet</span>) &#123;</span><br><span class="line">        </span><br><span class="line">        faucetLogic = <span class="title function_">address</span>(<span class="keyword">new</span> <span class="title class_">FaucetLogic</span>());</span><br><span class="line">        faucet  = _faucet;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(block.<span class="property">chainid</span> == <span class="variable constant_">CODE_CHAIN</span>) &#123;</span><br><span class="line">            tokenA = <span class="title function_">address</span>(<span class="keyword">new</span> <span class="title class_">Token</span>(<span class="string">&quot;CODE USDC&quot;</span>, <span class="string">&quot;cUSDC&quot;</span>));</span><br><span class="line">            tokenB = <span class="title function_">address</span>(<span class="keyword">new</span> <span class="title class_">Token</span>(<span class="string">&quot;CODE PURR&quot;</span>, <span class="string">&quot;cPURR&quot;</span>));</span><br><span class="line">            tokenC = <span class="title function_">address</span>(<span class="keyword">new</span> <span class="title class_">Token</span>(<span class="string">&quot;CODE MOODENG&quot;</span>, <span class="string">&quot;cMOODENG&quot;</span>));</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            tokenA = <span class="title function_">address</span>(<span class="keyword">new</span> <span class="title class_">Token</span>(<span class="string">&quot;GATE USDC&quot;</span>, <span class="string">&quot;gUSDC&quot;</span>));</span><br><span class="line">            tokenB = <span class="title function_">address</span>(<span class="keyword">new</span> <span class="title class_">Token</span>(<span class="string">&quot;GATE PURR&quot;</span>, <span class="string">&quot;gPURR&quot;</span>));</span><br><span class="line">            tokenC = <span class="title function_">address</span>(<span class="keyword">new</span> <span class="title class_">Token</span>(<span class="string">&quot;GATE MOODENG&quot;</span>, <span class="string">&quot;gMOODENG&quot;</span>));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="title class_">Token</span>[] memory tokens = <span class="keyword">new</span> <span class="title class_">Token</span>[](<span class="number">3</span>);</span><br><span class="line">        tokens[<span class="number">0</span>] = <span class="title class_">Token</span>(tokenA);</span><br><span class="line">        tokens[<span class="number">1</span>] = <span class="title class_">Token</span>(tokenB);</span><br><span class="line">        tokens[<span class="number">2</span>] = <span class="title class_">Token</span>(tokenC);</span><br><span class="line"></span><br><span class="line">        dex = <span class="title function_">address</span>(<span class="keyword">new</span> <span class="title function_">DEX</span>(msg.<span class="property">sender</span>, tokens));</span><br><span class="line">        <span class="title class_">Token</span>(tokenA).<span class="title function_">mint</span>(<span class="title function_">address</span>(dex), <span class="variable constant_">DEX_SUPPLY</span>);</span><br><span class="line">        <span class="title class_">Token</span>(tokenB).<span class="title function_">mint</span>(<span class="title function_">address</span>(dex), <span class="variable constant_">DEX_SUPPLY</span>);</span><br><span class="line">        <span class="title class_">Token</span>(tokenC).<span class="title function_">mint</span>(<span class="title function_">address</span>(dex), <span class="variable constant_">DEX_SUPPLY</span>);</span><br><span class="line"></span><br><span class="line">        <span class="title class_">Token</span>(tokenA).<span class="title function_">transferOwnership</span>(msg.<span class="property">sender</span>);</span><br><span class="line">        <span class="title class_">Token</span>(tokenB).<span class="title function_">transferOwnership</span>(msg.<span class="property">sender</span>);</span><br><span class="line">        <span class="title class_">Token</span>(tokenC).<span class="title function_">transferOwnership</span>(msg.<span class="property">sender</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">getToken</span>(<span class="params"></span>) public &#123;</span><br><span class="line">        <span class="keyword">if</span>(block.<span class="property">chainid</span> == <span class="variable constant_">GATE_CHAIN</span>) &#123;</span><br><span class="line">            <span class="title class_">Token</span>(tokenA).<span class="title function_">transfer</span>(faucet, <span class="number">100</span> ether);</span><br><span class="line">            <span class="title class_">Token</span>(tokenB).<span class="title function_">transfer</span>(faucet, <span class="number">100</span> ether);</span><br><span class="line">            <span class="title class_">Token</span>(tokenC).<span class="title function_">transfer</span>(faucet, <span class="number">100</span> ether);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">solve</span>(<span class="params"></span>) public &#123;</span><br><span class="line">        <span class="built_in">require</span>(block.<span class="property">chainid</span> == <span class="variable constant_">CODE_CHAIN</span>, <span class="string">&quot;Can be solved only on CODE CHAIN&quot;</span>);</span><br><span class="line">        <span class="built_in">require</span>(<span class="title class_">Token</span>(tokenA).<span class="title function_">balanceOf</span>(msg.<span class="property">sender</span>) &gt;= <span class="variable constant_">DEX_SUPPLY</span> * <span class="number">2</span>, <span class="string">&quot;Not enough USDC&quot;</span>);</span><br><span class="line">        <span class="built_in">require</span>(<span class="title class_">Token</span>(tokenB).<span class="title function_">balanceOf</span>(msg.<span class="property">sender</span>) &gt;= <span class="variable constant_">DEX_SUPPLY</span> * <span class="number">2</span>, <span class="string">&quot;Not enough PURR&quot;</span>);</span><br><span class="line">        <span class="built_in">require</span>(<span class="title class_">Token</span>(tokenC).<span class="title function_">balanceOf</span>(msg.<span class="property">sender</span>) &gt;= <span class="variable constant_">DEX_SUPPLY</span> * <span class="number">2</span>, <span class="string">&quot;Not enough MOODENG&quot;</span>);</span><br><span class="line">        isSolved = <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><code>DEX</code> is the core contract in this challenge. The main duty for a DEX (Decentralized Exchange) is the exchange service, where users can exchange some <code>tokenA</code> to <code>tokenB</code> according to current exchange rate. </p>
-<p>Two <code>DEX</code> are deployed on different chains in this challenge. If one <code>DEX</code> exhausts a certain token, it’ll initiate a transfer request for more tokens with the other <code>DEX</code>, which actually completes a cross-chain exchange. <code>Message</code> related codes are used to handle cross-chain requirements, kinda cool.</p>
-<p>Here comes the core logic of <code>DEX</code> contract.</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">_swap</span>(<span class="params">address <span class="keyword">from</span>, address receiver, uint256 amount, bytes32 srcToken, bytes32 dstToken</span>) internal &#123;</span><br><span class="line">    uint256 rate = <span class="title function_">_getRate</span>(srcToken, dstToken);</span><br><span class="line">    <span class="title class_">Token</span> srcTokenAddress = <span class="title class_">Token</span>(tokenMapping[srcToken]);</span><br><span class="line">    <span class="title class_">Token</span> dstTokenAddress = <span class="title class_">Token</span>(tokenMapping[dstToken]);</span><br><span class="line">    uint256 targetAmount = amount * rate / <span class="number">1e6</span>;</span><br><span class="line">    uint256 diffAmount = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(dstTokenAddress.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>)) &lt; targetAmount) &#123;</span><br><span class="line">        diffAmount = targetAmount - dstTokenAddress.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>));</span><br><span class="line">        targetAmount = dstTokenAddress.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>));</span><br><span class="line">        amount = <span class="title function_">_getRate</span>(dstToken, srcToken) * targetAmount / <span class="number">1e6</span>;</span><br><span class="line">        emit <span class="title class_">MessageSent</span>(<span class="title class_">Message</span>(&#123;</span><br><span class="line">            <span class="attr">messageType</span>: <span class="title class_">MessageType</span>.<span class="property">LiquidityRequest</span>,</span><br><span class="line">            <span class="attr">from</span>: <span class="title function_">address</span>(<span class="variable language_">this</span>),</span><br><span class="line">            <span class="attr">receiver</span>: receiver,</span><br><span class="line">            <span class="attr">srcToken</span>: srcToken,</span><br><span class="line">            <span class="attr">dstToken</span>: dstToken,</span><br><span class="line">            <span class="attr">srcChainId</span>: block.<span class="property">chainid</span>,</span><br><span class="line">            <span class="attr">dstChainId</span>: block.<span class="property">chainid</span> == <span class="variable constant_">CODE_CHAIN</span> ? <span class="variable constant_">GATE_CHAIN</span> : <span class="variable constant_">CODE_CHAIN</span>,</span><br><span class="line">            <span class="attr">amount</span>: diffAmount</span><br><span class="line">        &#125;));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(<span class="keyword">from</span> != <span class="title function_">address</span>(<span class="variable language_">this</span>)) &#123;</span><br><span class="line">        srcTokenAddress.<span class="title function_">transferFrom</span>(<span class="keyword">from</span>, <span class="title function_">address</span>(<span class="variable language_">this</span>), amount);</span><br><span class="line">    &#125;</span><br><span class="line">    dstTokenAddress.<span class="title function_">transfer</span>(receiver, targetAmount);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>There exists a small vuln in the cross-chain process. Before <code>DEX</code> initiates the request, it recalculates the <code>amount = _getRate(dstToken, srcToken) * targetAmount / 1e6</code> first. Due to integer division, this may cause a loss of precision. If the <code>targetAmount</code> is accurately controlled, we can set <code>amount</code> to 0 and get paid for free.</p>
-<p>Therefore, we control the number of <code>tokenA/B/C</code> first through the exchange service, and then trigger this vuln via a cross-chain request. By repeating this process several times we can solve this challenge. –&gt;</p>
-]]></content>
-      <tags>
-        <tag>DFA</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Yet another story about Sagemath environment</title>
     <url>/2025/07/23/sageenv/</url>
     <content><![CDATA[<p>For some reasons, I reconfigured my Sagemath environment recently. This post shares my tips based on my experiences these days.</p>
@@ -794,6 +860,58 @@ The initialization is done by contract `Setup`. In short there are two `DEX` con
       <tags>
         <tag>LLL</tag>
         <tag>UOV</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>zk-Openings::Srdnlen CTF 2025 Qual</title>
+    <url>/2025/03/24/srdnlenctf2025/</url>
+    <content><![CDATA[<p>Time: 2025.01.19-20 (online)</p>
+<p>Interesting challenge, but I didn’t have enough time to solve it during the contest XDDD</p>
+<h2 id="zk-Openings-0-solve"><a href="#zk-Openings-0-solve" class="headerlink" title="zk-Openings (0 solve)"></a>zk-Openings (0 solve)</h2><blockquote>
+<ul>
+<li><a href="https://github.com/srdnlen/srdnlenctf-2025_public/tree/main/crypto_zk-openings/src">https://github.com/srdnlen/srdnlenctf-2025_public&#x2F;tree&#x2F;main&#x2F;crypto_zk-openings&#x2F;src</a></li>
+</ul>
+</blockquote>
+<p>I actually learnt a lot from the implementation, thank you @lrnzsir.</p>
+<h3 id="KZG-Commitment"><a href="#KZG-Commitment" class="headerlink" title="KZG Commitment"></a>KZG Commitment</h3><p>KZG commitment is a polynomial commitment scheme proposed by <a href="https://www.iacr.org/archive/asiacrypt2010/6477178/6477178.pdf">Kate et al in 2010</a>.</p>
+<p>While the original paper used a symmertric type-1 pairing, we prefer to use type-3 pairing these days. Basically we have three groups $(G_1, G_2, G_T)$ , two generators $(g_1 \in G_1, g_2 \in G_2)$, and a bilinear pairing function $e: G_1 \times G_2 \rightarrow G_T$. </p>
+<ol>
+<li>$\mathcal{Setup}(d) \rightarrow srs$: randomly samples a secret value $x$, and computes $srs &#x3D; (g_1^{x}, …, g_1^{x^d}, g_2^{x})$. While $x$ is considered to be “toxic waste”, it must be generated by trusted authority and deleted properly after use.</li>
+<li>$\mathcal{Commit}(srs, f) \rightarrow com$: computes the commitment $com &#x3D; g_1^{\Sigma_{i&#x3D;0}^d f_i \cdot x^i} &#x3D; \Pi_{i&#x3D;0}^{d} (g_1^{x^i})^{f_i}$ for the polynomial.</li>
+<li>$\mathcal{EvalProve}(srs, f, z) \rightarrow (\pi, f(z))$: computes a polynomial $q(x) &#x3D; \frac{f(x) - f(z)}{x-z}$. Then it computes the proof $\pi &#x3D; g_1^{\Sigma_{i&#x3D;0}^d q_i \cdot x^i} &#x3D; \Pi_{i&#x3D;0}^{d} (g_1^{x^i})^{q_i}$, proving that one knows the evaluation of $f$ over $z$.</li>
+<li>$\mathcal{EvalVerify}(srs, com, \pi, z, f(z)) \rightarrow 0&#x2F;1$: verifies the proof by checking $e(com \cdot g_1^{-f(z)}, g_2) \overset{?}{&#x3D;} e(\pi, g_2^{s} \cdot g_2^{-z})$.</li>
+</ol>
+<blockquote>
+<p>Note that KZG is a commitment (instead of ZKP) scheme. </p>
+</blockquote>
+<h3 id="The-Challenge"><a href="#The-Challenge" class="headerlink" title="The Challenge"></a>The Challenge</h3><p>For this challenge, we performs the KZG process on some secret polynomial $f$ and ended up with <code>opening.json</code>. Considering the difficulty of DLP under standard parameters, I actually just skip the content related to curve points. So basically we have $k&#x3D;20$ pairs of $(x_i, y_i&#x3D;f(x_i))$.</p>
+<p>And here is how we get the secret polynomial. </p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">assert</span> n <span class="keyword">in</span> AES.key_size <span class="comment"># 32</span></span><br><span class="line">key = os.urandom(n)</span><br><span class="line">evals = <span class="built_in">list</span>(key)</span><br><span class="line">poly = P(intt(evals))</span><br><span class="line"><span class="keyword">assert</span> <span class="built_in">all</span>(poly(H[i]) == key[i] <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(n))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">lcg</span>(<span class="params">m: <span class="built_in">int</span>, a: <span class="built_in">int</span>, c: <span class="built_in">int</span>, x: <span class="built_in">int</span></span>) -&gt; <span class="string">&quot;Generator[int, None, None]&quot;</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot; Linear Congruential Generator &quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        x = (a * x + c) % m</span><br><span class="line">        <span class="keyword">yield</span> x</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">a, c, x = [secrets.randbelow(p) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">3</span>)]</span><br><span class="line">rng = lcg(p, a, c, x)</span><br><span class="line"></span><br><span class="line">k = <span class="number">20</span></span><br><span class="line">hiding_poly = P([<span class="built_in">next</span>(rng) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(k)])</span><br><span class="line">hidden_poly = poly + hiding_poly * Z_H</span><br><span class="line"><span class="keyword">assert</span> <span class="built_in">all</span>(hidden_poly(H[i]) == key[i] <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(n))</span><br></pre></td></tr></table></figure>
+
+<p>In short, we have a 32-degree polynomial $f(x)$ and a 20-degree polynomial $g(x)$, where $f(H_i) &#x3D; key_i$ and $g_i$ is generated successively by a secret LCG. Then we have our secret polynomial $h(x) &#x3D; f(x) + g(x) \cdot (x^n-1)$ satisfying $h(H_i) &#x3D; f(H_i) &#x3D; key_i$ since $H_i^n &#x3D; 1$.</p>
+<p>According to previous discussion, we have 20 pairs of random points $(x_i, h(x_i))$, which is apparently not enough to recover $h(x)$. Considering $key_i$ is very small compared to $p$, LLL is our option. </p>
+<p>We can’t construct the Lattice directly, but we can resort to $g(x)$. The first step is to establish a linear representation between $g(x)$ and $key_i$, which is quite simple, since <code>ntt</code>, <code>intt</code> and <code>polynomial_evaluation</code> are all linear transformations. </p>
+<ul>
+<li>$\vec{key} &#x3D; NTT_{n \times n} \cdot \vec{f}$</li>
+<li>$\vec{y} &#x3D; X_{k \times (n+k)} \cdot \vec{h} &#x3D; FX_{k \times n} \cdot \vec{f}+ GX_{k \times k} \cdot \vec{g}$</li>
+</ul>
+<p>$\Rightarrow \vec{g} &#x3D; GX^{-1} \cdot (\vec{y} - FX \cdot NTT^{-1} \cdot \vec{key})$</p>
+<p>For $NTT^{-1}$, you can also compute $iNTT$.</p>
+<h3 id="Linearization-for-Unknown-LCG"><a href="#Linearization-for-Unknown-LCG" class="headerlink" title="Linearization for Unknown LCG"></a>Linearization for Unknown LCG</h3><p>We know that $g_{i+1} &#x3D; a \cdot g_i + b$, but $(a, b)$ are randomly chosen on $GF_p$. To get rid of them, we construct equations like $(g_{i+d_0} - g_{i}) \cdot (g_{j+d_1} - g_{j}) &#x3D; (g_{i+d_1} - g_{i}) \cdot (g_{j+d_0} - g_{j})$.</p>
+<p>Here comes an interesting (maybe) question: how many linearly independent equations can we get? Well this did appealled to me and @糖醋小鸡块. Since we can get $k-2$ equations like $y_{i+1} &#x3D; a \cdot y_i$, we can choose any two of them to eliminate $a$, and thus we have $C(k-2, 2)$ equations.</p>
+<p>For @lrnzsir’s strategy, he iterates $(g_{i+2}-g_{i+1}) \cdot (g_{j+1}-g_j) &#x3D; (g_{i+1}-g_i) \cdot (g_{j+2}-g_{j+1})$ for all $i, j \in [k - 2]$ and $i &lt; j$. We can get exactly $C(k-2, 2)$ equations and each equation contains a unique binomial (thus linear independent). So this is the best we can get.</p>
+<blockquote>
+<p>We (@糖醋小鸡块) believe there exists a better way for theoratical analysis.</p>
+</blockquote>
+<p>With linear transformation, we have $C(k-2, 2)$ quadratic equations about $key_i$ now, containing $n + C(n+1, 2)$ monomials. Then we can do LLL on the linearized system to recover the key. One can ignore some equations and utilize <code>flatter</code> for better efficiency.</p>
+<blockquote>
+<p><a href="zk-Openings/exp.py">exp.py</a></p>
+</blockquote>
+<p>There maybe some difference in my code since it’s implemented months ago XD</p>
+]]></content>
+      <tags>
+        <tag>LLL</tag>
+        <tag>KZG</tag>
       </tags>
   </entry>
   <entry>
@@ -1042,58 +1160,6 @@ The initialization is done by contract `Setup`. In short there are two `DEX` con
         <tag>ECC</tag>
         <tag>UOV</tag>
         <tag>ZKP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>zk-Openings::Srdnlen CTF 2025 Qual</title>
-    <url>/2025/03/24/srdnlenctf2025/</url>
-    <content><![CDATA[<p>Time: 2025.01.19-20 (online)</p>
-<p>Interesting challenge, but I didn’t have enough time to solve it during the contest XDDD</p>
-<h2 id="zk-Openings-0-solve"><a href="#zk-Openings-0-solve" class="headerlink" title="zk-Openings (0 solve)"></a>zk-Openings (0 solve)</h2><blockquote>
-<ul>
-<li><a href="https://github.com/srdnlen/srdnlenctf-2025_public/tree/main/crypto_zk-openings/src">https://github.com/srdnlen/srdnlenctf-2025_public&#x2F;tree&#x2F;main&#x2F;crypto_zk-openings&#x2F;src</a></li>
-</ul>
-</blockquote>
-<p>I actually learnt a lot from the implementation, thank you @lrnzsir.</p>
-<h3 id="KZG-Commitment"><a href="#KZG-Commitment" class="headerlink" title="KZG Commitment"></a>KZG Commitment</h3><p>KZG commitment is a polynomial commitment scheme proposed by <a href="https://www.iacr.org/archive/asiacrypt2010/6477178/6477178.pdf">Kate et al in 2010</a>.</p>
-<p>While the original paper used a symmertric type-1 pairing, we prefer to use type-3 pairing these days. Basically we have three groups $(G_1, G_2, G_T)$ , two generators $(g_1 \in G_1, g_2 \in G_2)$, and a bilinear pairing function $e: G_1 \times G_2 \rightarrow G_T$. </p>
-<ol>
-<li>$\mathcal{Setup}(d) \rightarrow srs$: randomly samples a secret value $x$, and computes $srs &#x3D; (g_1^{x}, …, g_1^{x^d}, g_2^{x})$. While $x$ is considered to be “toxic waste”, it must be generated by trusted authority and deleted properly after use.</li>
-<li>$\mathcal{Commit}(srs, f) \rightarrow com$: computes the commitment $com &#x3D; g_1^{\Sigma_{i&#x3D;0}^d f_i \cdot x^i} &#x3D; \Pi_{i&#x3D;0}^{d} (g_1^{x^i})^{f_i}$ for the polynomial.</li>
-<li>$\mathcal{EvalProve}(srs, f, z) \rightarrow (\pi, f(z))$: computes a polynomial $q(x) &#x3D; \frac{f(x) - f(z)}{x-z}$. Then it computes the proof $\pi &#x3D; g_1^{\Sigma_{i&#x3D;0}^d q_i \cdot x^i} &#x3D; \Pi_{i&#x3D;0}^{d} (g_1^{x^i})^{q_i}$, proving that one knows the evaluation of $f$ over $z$.</li>
-<li>$\mathcal{EvalVerify}(srs, com, \pi, z, f(z)) \rightarrow 0&#x2F;1$: verifies the proof by checking $e(com \cdot g_1^{-f(z)}, g_2) \overset{?}{&#x3D;} e(\pi, g_2^{s} \cdot g_2^{-z})$.</li>
-</ol>
-<blockquote>
-<p>Note that KZG is a commitment (instead of ZKP) scheme. </p>
-</blockquote>
-<h3 id="The-Challenge"><a href="#The-Challenge" class="headerlink" title="The Challenge"></a>The Challenge</h3><p>For this challenge, we performs the KZG process on some secret polynomial $f$ and ended up with <code>opening.json</code>. Considering the difficulty of DLP under standard parameters, I actually just skip the content related to curve points. So basically we have $k&#x3D;20$ pairs of $(x_i, y_i&#x3D;f(x_i))$.</p>
-<p>And here is how we get the secret polynomial. </p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">assert</span> n <span class="keyword">in</span> AES.key_size <span class="comment"># 32</span></span><br><span class="line">key = os.urandom(n)</span><br><span class="line">evals = <span class="built_in">list</span>(key)</span><br><span class="line">poly = P(intt(evals))</span><br><span class="line"><span class="keyword">assert</span> <span class="built_in">all</span>(poly(H[i]) == key[i] <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(n))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">lcg</span>(<span class="params">m: <span class="built_in">int</span>, a: <span class="built_in">int</span>, c: <span class="built_in">int</span>, x: <span class="built_in">int</span></span>) -&gt; <span class="string">&quot;Generator[int, None, None]&quot;</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot; Linear Congruential Generator &quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        x = (a * x + c) % m</span><br><span class="line">        <span class="keyword">yield</span> x</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">a, c, x = [secrets.randbelow(p) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">3</span>)]</span><br><span class="line">rng = lcg(p, a, c, x)</span><br><span class="line"></span><br><span class="line">k = <span class="number">20</span></span><br><span class="line">hiding_poly = P([<span class="built_in">next</span>(rng) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(k)])</span><br><span class="line">hidden_poly = poly + hiding_poly * Z_H</span><br><span class="line"><span class="keyword">assert</span> <span class="built_in">all</span>(hidden_poly(H[i]) == key[i] <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(n))</span><br></pre></td></tr></table></figure>
-
-<p>In short, we have a 32-degree polynomial $f(x)$ and a 20-degree polynomial $g(x)$, where $f(H_i) &#x3D; key_i$ and $g_i$ is generated successively by a secret LCG. Then we have our secret polynomial $h(x) &#x3D; f(x) + g(x) \cdot (x^n-1)$ satisfying $h(H_i) &#x3D; f(H_i) &#x3D; key_i$ since $H_i^n &#x3D; 1$.</p>
-<p>According to previous discussion, we have 20 pairs of random points $(x_i, h(x_i))$, which is apparently not enough to recover $h(x)$. Considering $key_i$ is very small compared to $p$, LLL is our option. </p>
-<p>We can’t construct the Lattice directly, but we can resort to $g(x)$. The first step is to establish a linear representation between $g(x)$ and $key_i$, which is quite simple, since <code>ntt</code>, <code>intt</code> and <code>polynomial_evaluation</code> are all linear transformations. </p>
-<ul>
-<li>$\vec{key} &#x3D; NTT_{n \times n} \cdot \vec{f}$</li>
-<li>$\vec{y} &#x3D; X_{k \times (n+k)} \cdot \vec{h} &#x3D; FX_{k \times n} \cdot \vec{f}+ GX_{k \times k} \cdot \vec{g}$</li>
-</ul>
-<p>$\Rightarrow \vec{g} &#x3D; GX^{-1} \cdot (\vec{y} - FX \cdot NTT^{-1} \cdot \vec{key})$</p>
-<p>For $NTT^{-1}$, you can also compute $iNTT$.</p>
-<h3 id="Linearization-for-Unknown-LCG"><a href="#Linearization-for-Unknown-LCG" class="headerlink" title="Linearization for Unknown LCG"></a>Linearization for Unknown LCG</h3><p>We know that $g_{i+1} &#x3D; a \cdot g_i + b$, but $(a, b)$ are randomly chosen on $GF_p$. To get rid of them, we construct equations like $(g_{i+d_0} - g_{i}) \cdot (g_{j+d_1} - g_{j}) &#x3D; (g_{i+d_1} - g_{i}) \cdot (g_{j+d_0} - g_{j})$.</p>
-<p>Here comes an interesting (maybe) question: how many linearly independent equations can we get? Well this did appealled to me and @糖醋小鸡块. Since we can get $k-2$ equations like $y_{i+1} &#x3D; a \cdot y_i$, we can choose any two of them to eliminate $a$, and thus we have $C(k-2, 2)$ equations.</p>
-<p>For @lrnzsir’s strategy, he iterates $(g_{i+2}-g_{i+1}) \cdot (g_{j+1}-g_j) &#x3D; (g_{i+1}-g_i) \cdot (g_{j+2}-g_{j+1})$ for all $i, j \in [k - 2]$ and $i &lt; j$. We can get exactly $C(k-2, 2)$ equations and each equation contains a unique binomial (thus linear independent). So this is the best we can get.</p>
-<blockquote>
-<p>We (@糖醋小鸡块) believe there exists a better way for theoratical analysis.</p>
-</blockquote>
-<p>With linear transformation, we have $C(k-2, 2)$ quadratic equations about $key_i$ now, containing $n + C(n+1, 2)$ monomials. Then we can do LLL on the linearized system to recover the key. One can ignore some equations and utilize <code>flatter</code> for better efficiency.</p>
-<blockquote>
-<p><a href="zk-Openings/exp.py">exp.py</a></p>
-</blockquote>
-<p>There maybe some difference in my code since it’s implemented months ago XD</p>
-]]></content>
-      <tags>
-        <tag>LLL</tag>
-        <tag>KZG</tag>
       </tags>
   </entry>
 </search>
